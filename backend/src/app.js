@@ -84,17 +84,24 @@ app.get('/', (req, res) => {
   });
 });
 
-// Mount All Feature API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/learning-shorts', learningShortRoutes);
-app.use('/api/study-rooms', studyRoomRoutes);
-app.use('/api/seminars', seminarRoutes);
-app.use('/api/career', careerRoutes);
-app.use('/api/feedback', feedbackRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/analytics', analyticsRoutes);
+// Mount All Feature API Routes (both with /api prefix and direct fallback)
+const routeList = [
+  ['/auth', authRoutes],
+  ['/users', userRoutes],
+  ['/courses', courseRoutes],
+  ['/learning-shorts', learningShortRoutes],
+  ['/study-rooms', studyRoomRoutes],
+  ['/seminars', seminarRoutes],
+  ['/career', careerRoutes],
+  ['/feedback', feedbackRoutes],
+  ['/notifications', notificationRoutes],
+  ['/analytics', analyticsRoutes],
+];
+
+routeList.forEach(([path, router]) => {
+  app.use(`/api${path}`, router);
+  app.use(path, router);
+});
 // app.use('/api/auth', authRoutes);
 // app.use('/api/users', userRoutes);
 // app.use('/api/courses', courseRoutes);
