@@ -14,6 +14,6 @@ router.get('/', getAllCourses);
 router.get('/my/enrolled', verifyToken, getMyEnrolledCourses);
 router.get('/:id', getCourseById);
 router.post('/:id/enroll', verifyToken, enrollInCourse);
-router.post('/', verifyToken, authorize('admin'), createCourse);
+router.post('/', verifyToken, authorize('admin', 'instructor'), createCourse);
 
 export default router;

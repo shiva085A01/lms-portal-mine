@@ -1,6 +1,10 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { StudentProtectedRoute, AdminProtectedRoute } from '../components/common/ProtectedRoute';
+import {
+  StudentProtectedRoute,
+  AdminProtectedRoute,
+  InstructorProtectedRoute,
+} from '../components/common/ProtectedRoute';
 
 // Public & Auth Pages
 import AppHome from '../App';
@@ -17,6 +21,12 @@ import StudyRooms from '../pages/student/StudyRooms';
 import Seminars from '../pages/student/Seminars';
 import CareerBuilding from '../pages/student/CareerBuilding';
 import WeeklyFeedback from '../pages/student/WeeklyFeedback';
+
+// Instructor Pages
+import InstructorDashboard from '../pages/instructor/InstructorDashboard';
+import InstructorCourses from '../pages/instructor/InstructorCourses';
+import InstructorSeminars from '../pages/instructor/InstructorSeminars';
+import InstructorGrading from '../pages/instructor/InstructorGrading';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -89,6 +99,40 @@ export const AppRoutes = () => {
           <StudentProtectedRoute>
             <WeeklyFeedback />
           </StudentProtectedRoute>
+        }
+      />
+
+      {/* Instructor Protected Pages */}
+      <Route
+        path="/instructor/dashboard"
+        element={
+          <InstructorProtectedRoute>
+            <InstructorDashboard />
+          </InstructorProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/courses"
+        element={
+          <InstructorProtectedRoute>
+            <InstructorCourses />
+          </InstructorProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/seminars"
+        element={
+          <InstructorProtectedRoute>
+            <InstructorSeminars />
+          </InstructorProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/grading"
+        element={
+          <InstructorProtectedRoute>
+            <InstructorGrading />
+          </InstructorProtectedRoute>
         }
       />
 

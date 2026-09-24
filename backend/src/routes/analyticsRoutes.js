@@ -4,6 +4,6 @@ import { verifyToken, authorize } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.get('/overview', verifyToken, authorize('admin'), getPlatformOverview);
+router.get('/overview', verifyToken, authorize('admin', 'instructor'), getPlatformOverview);
 
 export default router;

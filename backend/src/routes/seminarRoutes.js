@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.get('/', getAllSeminars);
 router.post('/:id/register', verifyToken, registerForSeminar);
-router.post('/', verifyToken, authorize('admin'), createSeminar);
+router.post('/', verifyToken, authorize('admin', 'instructor'), createSeminar);
 
 export default router;

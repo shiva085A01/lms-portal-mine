@@ -40,6 +40,8 @@ export const Login = () => {
         navigate(from, { replace: true });
       } else if (result.user.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
+      } else if (result.user.role === 'instructor') {
+        navigate('/instructor/dashboard', { replace: true });
       } else {
         navigate('/student/dashboard', { replace: true });
       }
@@ -51,6 +53,11 @@ export const Login = () => {
     if (role === 'admin') {
       setFormData({
         email: 'admin@lms.com',
+        password: 'Password@123',
+      });
+    } else if (role === 'instructor') {
+      setFormData({
+        email: 'instructor@lms.com',
         password: 'Password@123',
       });
     } else {
@@ -151,23 +158,32 @@ export const Login = () => {
               <span className="text-[10px] text-slate-500">1-click test</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickFill('student')}
-                className="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all text-left flex items-center justify-between"
+                className="px-2.5 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all text-left flex items-center justify-between"
               >
                 <span>Student</span>
-                <span className="text-[10px] text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded">Fill</span>
+                <span className="text-[9px] text-brand-400 bg-brand-500/10 px-1 py-0.5 rounded">Fill</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickFill('instructor')}
+                className="px-2.5 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all text-left flex items-center justify-between"
+              >
+                <span>Instructor</span>
+                <span className="text-[9px] text-purple-400 bg-purple-500/10 px-1 py-0.5 rounded">Fill</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickFill('admin')}
-                className="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all text-left flex items-center justify-between"
+                className="px-2.5 py-2 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 hover:bg-slate-700/60 hover:text-white transition-all text-left flex items-center justify-between"
               >
                 <span>Admin</span>
-                <span className="text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">Fill</span>
+                <span className="text-[9px] text-amber-400 bg-amber-500/10 px-1 py-0.5 rounded">Fill</span>
               </button>
             </div>
           </div>

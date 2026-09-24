@@ -26,6 +26,9 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     if (user?.role === 'admin') {
       return <Navigate to="/admin/dashboard" replace />;
     }
+    if (user?.role === 'instructor') {
+      return <Navigate to="/instructor/dashboard" replace />;
+    }
     return <Navigate to="/student/dashboard" replace />;
   }
 
@@ -38,6 +41,10 @@ export const StudentProtectedRoute = ({ children }) => (
 
 export const AdminProtectedRoute = ({ children }) => (
   <ProtectedRoute allowedRoles={['admin']}>{children}</ProtectedRoute>
+);
+
+export const InstructorProtectedRoute = ({ children }) => (
+  <ProtectedRoute allowedRoles={['instructor', 'admin']}>{children}</ProtectedRoute>
 );
 
 export default ProtectedRoute;
