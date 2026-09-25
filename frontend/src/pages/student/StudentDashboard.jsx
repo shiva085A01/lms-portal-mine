@@ -84,6 +84,11 @@ export const StudentDashboard = () => {
                   Scrollable Learning
                 </Button>
               </Link>
+              <Link to="/bookshelf">
+                <Button size="sm" variant="glass" icon={Sparkles} className="border-amber-500/30 text-amber-300 hover:text-white hover:bg-amber-500/10">
+                  3D Module Bookshelf
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

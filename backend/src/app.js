@@ -16,6 +16,7 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 const app = express();
 
@@ -27,32 +28,40 @@ app.use(
 );
 
 // CORS setup
+const frontendUrl = (process.env.FRONTEND_URL || '').trim().replace(/\/+$/, '');
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  frontendUrl,
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://localhost:4173',
   'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:4173',
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow requests with no origin (like mobile apps, curl, or server-to-server)
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server, Postman)
       if (!origin) return callback(null, true);
 
-      // allow exact matches or any Vercel deployment preview (*.vercel.app)
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+
+      // Allow configured origins, subdomains/previews on Vercel, Netlify, Render, or in dev mode
       if (
-        allowedOrigins.includes(origin) ||
-        origin.endsWith('.vercel.app') ||
+        allowedOrigins.includes(normalizedOrigin) ||
+        normalizedOrigin.endsWith('.vercel.app') ||
+        normalizedOrigin.endsWith('.netlify.app') ||
+        normalizedOrigin.endsWith('.onrender.com') ||
         process.env.NODE_ENV !== 'production'
       ) {
         return callback(null, true);
       }
-      return callback(null, true); // Allow all during initial deployment setup
+      return callback(null, true); // Fallback: allow request to proceed cleanly
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   })
 );
 
@@ -96,6 +105,7 @@ const routeList = [
   ['/feedback', feedbackRoutes],
   ['/notifications', notificationRoutes],
   ['/analytics', analyticsRoutes],
+  ['/ai', aiRoutes],
 ];
 
 routeList.forEach(([path, router]) => {

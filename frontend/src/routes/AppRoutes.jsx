@@ -12,6 +12,7 @@ import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import ForgotPassword from '../pages/auth/ForgotPassword';
 import ResetPassword from '../pages/auth/ResetPassword';
+import BookshelfPage from '../pages/BookshelfPage';
 
 // Student Pages
 import StudentDashboard from '../pages/student/StudentDashboard';
@@ -50,6 +51,22 @@ export const AppRoutes = () => {
         element={
           <StudentProtectedRoute>
             <StudentDashboard />
+          </StudentProtectedRoute>
+        }
+      />
+      <Route
+        path="/bookshelf"
+        element={
+          <StudentProtectedRoute>
+            <BookshelfPage />
+          </StudentProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/bookshelf"
+        element={
+          <StudentProtectedRoute>
+            <BookshelfPage />
           </StudentProtectedRoute>
         }
       />

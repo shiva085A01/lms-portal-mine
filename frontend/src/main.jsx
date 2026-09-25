@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { AppRoutes } from './routes/AppRoutes.jsx';
+import { AIAssistantWidget } from './components/common/AIAssistantWidget.jsx';
 import './index.css';
 import { Toaster } from 'react-hot-toast';
 
@@ -11,6 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <AIAssistantWidget />
         <Toaster
           position="top-right"
           toastOptions={{

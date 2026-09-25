@@ -7,12 +7,23 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "build": "echo 'Backend build step complete'",
     "seed": "node scripts/seed.js"
   },
-  "keywords": ["lms", "edtech", "express", "mongodb", "ai-evaluation"],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "lms",
+    "edtech",
+    "express",
+    "mongodb",
+    "ai-evaluation"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",

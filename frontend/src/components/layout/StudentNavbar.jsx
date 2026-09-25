@@ -52,6 +52,7 @@ export const StudentNavbar = () => {
     { label: 'Seminars', path: '/student/seminars', icon: Video },
     { label: 'Career Hub', path: '/student/career', icon: Briefcase },
     { label: 'Weekly Feedback', path: '/student/feedback', icon: MessageSquare },
+    { label: '3D Library', path: '/bookshelf', icon: Sparkles, badge: '3D' },
   ];
 
   return (
