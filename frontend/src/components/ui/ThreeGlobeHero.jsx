@@ -1,17 +1,76 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { Globe, Sparkles, RotateCw, Compass, Zap } from 'lucide-react';
+import {
+  Globe,
+  Sparkles,
+  RotateCw,
+  Compass,
+  Zap,
+  Users,
+  Terminal,
+  BookOpen,
+  Calendar,
+  Radio,
+  CheckCircle2,
+  Info,
+} from 'lucide-react';
 
 /**
- * High-Performance Three.js Interactive 3D Globe Component
- * Real-time 3D spherical mesh, dynamic orbital particle rings, pulsating city nodes,
- * and mouse-controlled rotation with dual Light/Dark theme support.
+ * High-Performance Three.js Interactive 3D Knowledge Globe Component
+ * Visualizes LearnSphere's Global Learning Network:
+ * - 24/7 Distributed Peer Study Pods
+ * - Real-time Gemini AI Rubric Evaluation Nodes
+ * - Live Masterclasses & 3D Spatial Knowledge Streams
  */
-export const ThreeGlobeHero = ({ className = '', height = '460px' }) => {
+export const ThreeGlobeHero = ({ className = '', height = '490px' }) => {
   const containerRef = useRef(null);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const [interactive, setInteractive] = useState(true);
+  const [selectedNode, setSelectedNode] = useState(0);
+
+  // Core Features highlighted on the 3D Knowledge Globe
+  const globeFeatures = [
+    {
+      id: 'pods',
+      title: '24/7 Peer Study Pods',
+      icon: Users,
+      metric: '18+ Active Rooms',
+      city: 'Global Mesh (Tokyo, Bengaluru, London, SF)',
+      description: 'Real-time collaborative focus rooms with synchronized Pomodoro timers and peer screen sharing.',
+      color: 'text-jade-500',
+      bg: 'bg-jade-500/10 border-jade-500/30',
+    },
+    {
+      id: 'ai-rubric',
+      title: 'Gemini AI Rubric Nodes',
+      icon: Terminal,
+      metric: 'Sub-second AST Review',
+      city: 'Distributed Edge Clusters',
+      description: 'Automated line-by-line code evaluation, algorithmic Big-O proofs, and security vulnerability analysis.',
+      color: 'text-terracotta-500',
+      bg: 'bg-terracotta-500/10 border-terracotta-500/30',
+    },
+    {
+      id: 'spatial-shelf',
+      title: '3D Spatial Bookshelf',
+      icon: BookOpen,
+      metric: 'WebGL Volume Geometry',
+      city: 'Interactive Mesh Library',
+      description: 'Tactile 3D module exploration with raycasted spine inspection and instant chapter launches.',
+      color: 'text-amber-500',
+      bg: 'bg-amber-500/10 border-amber-500/30',
+    },
+    {
+      id: 'masterclasses',
+      title: 'Live Faculty Masterclasses',
+      icon: Calendar,
+      metric: '4,000+ Attendees',
+      city: 'Direct Research Feeds',
+      description: 'Interactive webinars hosted by senior engineering leads from Google, Stanford, and AWS.',
+      color: 'text-blue-500',
+      bg: 'bg-blue-500/10 border-blue-500/30',
+    },
+  ];
 
   useEffect(() => {
     let animationFrameId;
@@ -174,13 +233,13 @@ export const ThreeGlobeHero = ({ className = '', height = '460px' }) => {
       globeGroup.add(markersGroup);
 
       const hubLocations = [
-        { lat: 37.77, lon: -122.41 }, // San Francisco
-        { lat: 51.50, lon: -0.12 },   // London
-        { lat: 35.67, lon: 139.65 },  // Tokyo
-        { lat: 12.97, lon: 77.59 },   // Bengaluru
-        { lat: -33.86, lon: 151.20 }, // Sydney
-        { lat: 48.85, lon: 2.35 },    // Paris
-        { lat: 1.35, lon: 103.81 },   // Singapore
+        { lat: 37.77, lon: -122.41, label: 'SF AI Cluster' }, // San Francisco
+        { lat: 51.50, lon: -0.12, label: 'London Node' },   // London
+        { lat: 35.67, lon: 139.65, label: 'Tokyo Pod' },  // Tokyo
+        { lat: 12.97, lon: 77.59, label: 'Bengaluru Core' },   // Bengaluru
+        { lat: -33.86, lon: 151.20, label: 'Sydney Pod' }, // Sydney
+        { lat: 48.85, lon: 2.35, label: 'Paris Hub' },    // Paris
+        { lat: 1.35, lon: 103.81, label: 'Singapore Edge' },   // Singapore
       ];
 
       hubLocations.forEach((loc) => {
@@ -192,17 +251,17 @@ export const ThreeGlobeHero = ({ className = '', height = '460px' }) => {
         const y = r * Math.sin(latRad);
         const z = r * Math.cos(latRad) * Math.sin(lonRad);
 
-        const markerGeo = new THREE.SphereGeometry(0.045, 12, 12);
+        const markerGeo = new THREE.SphereGeometry(0.05, 12, 12);
         const markerMat = new THREE.MeshBasicMaterial({ color: secondaryColor });
         const marker = new THREE.Mesh(markerGeo, markerMat);
         marker.position.set(x, y, z);
         markersGroup.add(marker);
 
         // Pulsing Spike / Beam
-        const spikeGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.25, 8);
+        const spikeGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.28, 8);
         const spikeMat = new THREE.MeshBasicMaterial({ color: primaryColor });
         const spike = new THREE.Mesh(spikeGeo, spikeMat);
-        spike.position.set(x * 1.07, y * 1.07, z * 1.07);
+        spike.position.set(x * 1.08, y * 1.08, z * 1.08);
         spike.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(x, y, z).normalize());
         markersGroup.add(spike);
       });
@@ -289,35 +348,79 @@ export const ThreeGlobeHero = ({ className = '', height = '460px' }) => {
     };
   }, [theme, isDark]);
 
+  const activeFeature = globeFeatures[selectedNode];
+  const FeatureIcon = activeFeature.icon;
+
   return (
     <div
-      className={`relative w-full rounded-3xl overflow-hidden border border-stone-200 dark:border-ink-800 bg-white/70 dark:bg-ink-900/80 backdrop-blur-xl shadow-xl flex flex-col justify-between select-none ${className}`}
+      className={`relative w-full rounded-3xl overflow-hidden border border-stone-200 dark:border-ink-800 bg-white/80 dark:bg-ink-900/90 backdrop-blur-xl shadow-xl flex flex-col justify-between select-none ${className}`}
       style={{ minHeight: height }}
     >
-      {/* Top Floating Badge */}
-      <div className="relative z-10 p-5 flex items-center justify-between pointer-events-none">
+      {/* Top Floating Badge & Live Indicator */}
+      <div className="relative z-10 p-4 sm:p-5 flex items-center justify-between pointer-events-none">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 border border-terracotta-500/20 text-terracotta-700 dark:text-terracotta-300 text-xs font-semibold font-mono">
-          <Globe className="w-3.5 h-3.5 text-terracotta-500 animate-spin" style={{ animationDuration: '12s' }} />
-          <span>Interactive 3D Knowledge Globe</span>
+          <Globe className="w-3.5 h-3.5 text-terracotta-500 animate-spin" style={{ animationDuration: '14s' }} />
+          <span>Global LMS Knowledge Mesh</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-ink-800 px-2.5 py-1 rounded-xl border border-stone-200 dark:border-ink-700">
-          <Zap className="w-3 h-3 text-amber-500" />
-          <span>WebGL 60 FPS</span>
+        <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-ink-800 px-2.5 py-1 rounded-xl border border-stone-200 dark:border-ink-700 shadow-sm">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block"></span>
+          <span>7 Global Hubs Active</span>
         </div>
       </div>
 
       {/* Three.js Canvas Container */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Bottom Floating Control Overlay */}
-      <div className="relative z-10 p-5 flex items-center justify-between pointer-events-none">
-        <div className="space-y-0.5">
-          <p className="text-xs font-bold text-stone-900 dark:text-parchment-50 font-serif">Global Learning Network</p>
-          <p className="text-[10px] text-stone-500 dark:text-stone-400 font-mono">Drag or move mouse to rotate 3D nodes</p>
+      {/* Feature Selector Tabs on the Globe */}
+      <div className="relative z-10 px-4 sm:px-5 pb-1 pointer-events-auto">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none p-1 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 max-w-fit mx-auto">
+          {globeFeatures.map((feat, idx) => {
+            const Icon = feat.icon;
+            const isSelected = selectedNode === idx;
+            return (
+              <button
+                key={feat.id}
+                type="button"
+                onClick={() => setSelectedNode(idx)}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  isSelected
+                    ? 'bg-amber-500 text-stone-950 font-bold shadow-md shadow-amber-500/30'
+                    : 'text-stone-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Icon className="w-3 h-3" />
+                <span>{feat.title.split(' ')[0]}</span>
+              </button>
+            );
+          })}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-semibold">Live Orbit</span>
+      </div>
+
+      {/* Bottom Floating Feature Callout Overlay */}
+      <div className="relative z-10 p-4 sm:p-5 pointer-events-auto">
+        <div className="p-3.5 rounded-2xl bg-white/95 dark:bg-ink-950/95 backdrop-blur-xl border border-stone-200 dark:border-ink-750 shadow-lg space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className={`p-1.5 rounded-lg ${activeFeature.bg} ${activeFeature.color}`}>
+                <FeatureIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-serif font-bold text-stone-900 dark:text-white">
+                  {activeFeature.title}
+                </h4>
+                <div className="text-[10px] text-stone-500 dark:text-stone-400 font-mono">
+                  {activeFeature.city}
+                </div>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-stone-100 dark:bg-ink-800 text-terracotta-600 dark:text-amber-400 font-bold border border-stone-200 dark:border-ink-700">
+              {activeFeature.metric}
+            </span>
+          </div>
+
+          <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-snug">
+            {activeFeature.description}
+          </p>
         </div>
       </div>
     </div>

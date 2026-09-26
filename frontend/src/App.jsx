@@ -48,9 +48,13 @@ import {
   TrendingUp,
   Search,
   Filter,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export function App() {
+  const [activeSection, setActiveSection] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
   const [heroView, setHeroView] = useState('globe'); // 'globe' | 'simulator'
   const [activeCourseCategory, setActiveCourseCategory] = useState('all');
@@ -80,6 +84,32 @@ export function App() {
 
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+
+  // ScrollSpy to highlight active navbar section reliably as user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['courses', 'shorts', 'studyrooms', 'rubric', 'bookshelf-section', 'masterclasses', 'career', 'faq'];
+      const scrollPosition = window.scrollY + 160;
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            setActiveSection(sectionId);
+            return;
+          }
+        }
+      }
+      if (window.scrollY < 200) {
+        setActiveSection('home');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Pomodoro timer effect
   useEffect(() => {
@@ -601,7 +631,7 @@ function cosineSimilarity(a, b) {
     },
     {
       q: 'What is the Interactive 3D Module Library?',
-      a: 'The 3D Bookshelf renders full-dimensional volume geometry representing curated engineering tracks, allowing tactile exploration and 1-click chapter launching.',
+      a: 'The 3D Bookshelf renders full-dimensional volume geometry representing curated engineering tracks, allowing tactile exploration and 1-click chapter launching without upfront login barriers.',
     },
     {
       q: 'Are certificates provided upon course completion?',
@@ -619,8 +649,8 @@ function cosineSimilarity(a, b) {
   );
 
   return (
-    <div className="relative min-h-screen bg-parchment-50 dark:bg-ink-950 text-stone-900 dark:text-parchment-100 flex flex-col justify-between overflow-x-hidden selection:bg-terracotta-500 selection:text-white font-sans transition-colors duration-300">
-      {/* Dynamic Interactive Canvas Background that responds to mouse movement & clicks */}
+    <div className="relative min-h-screen bg-parchment-50 dark:bg-ink-950 text-stone-900 dark:text-parchment-100 flex flex-col justify-between selection:bg-terracotta-500 selection:text-white font-sans transition-colors duration-300">
+      {/* Dynamic Interactive Canvas Background */}
       <InteractiveBackground />
 
       {/* Subtle Warm Ambient Lighting */}
@@ -628,76 +658,206 @@ function cosineSimilarity(a, b) {
       <div className="absolute top-[40%] right-[-10%] w-[500px] h-[500px] rounded-full bg-amber-500/10 blur-[150px] pointer-events-none z-0"></div>
       <div className="absolute top-[75%] left-[-5%] w-[450px] h-[450px] rounded-full bg-jade-500/10 blur-[150px] pointer-events-none z-0"></div>
 
-      {/* =========================================
-          STICKY TOP ANNOUNCEMENT & NAVIGATION HEADER
-         ========================================= */}
-      <div className="bg-gradient-to-r from-terracotta-600 via-amber-600 to-terracotta-700 text-white text-[11px] sm:text-xs py-1.5 px-4 text-center font-medium relative z-50 flex items-center justify-center gap-2">
-        <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-200" />
-        <span><strong>Next Cohort Starts Oct 2026:</strong> Explore live curriculum previews, interactive shorts, and study pods below!</span>
-        <Link to="/register" className="underline font-bold hover:text-amber-100 ml-1">
-          Join Free →
-        </Link>
-      </div>
+      {/* =========================================================================
+          1. 100% FIXED TOP NAVBAR CONTAINER (Always Visible Across All Sections)
+         ========================================================================= */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
+        {/* Top Cohort Announcement Ticker */}
+        <div className="bg-gradient-to-r from-terracotta-600 via-amber-600 to-terracotta-700 text-white text-[11px] sm:text-xs py-1.5 px-4 text-center font-medium shadow-sm flex items-center justify-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-200 shrink-0" />
+          <span className="truncate">
+            <strong>Next Cohort Starts Oct 2026:</strong> Explore live curriculum previews, interactive shorts, and study pods below!
+          </span>
+          <Link to="/register" className="underline font-bold hover:text-amber-100 shrink-0 ml-1">
+            Join Free →
+          </Link>
+        </div>
 
-      <header className="sticky top-0 z-50 border-b border-stone-200/80 dark:border-ink-800/80 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl px-4 sm:px-6 py-3.5 transition-colors duration-300 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-terracotta-600 via-amber-600 to-terracotta-400 p-0.5 shadow-md shadow-terracotta-500/20 group-hover:scale-105 transition-transform duration-200">
-              <div className="w-full h-full bg-white dark:bg-ink-900 rounded-[14px] flex items-center justify-center">
-                <Compass className="w-5 h-5 text-terracotta-500" />
+        {/* Main Sticky Glassmorphic Navbar */}
+        <header className="border-b border-stone-200/80 dark:border-ink-800/80 bg-white/95 dark:bg-ink-900/95 backdrop-blur-xl px-4 sm:px-6 py-2.5 sm:py-3 transition-colors duration-300 shadow-md">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            {/* Logo */}
+            <a href="#" className="flex items-center gap-3 group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-terracotta-600 via-amber-600 to-terracotta-400 p-0.5 shadow-md shadow-terracotta-500/20 group-hover:scale-105 transition-transform duration-200">
+                <div className="w-full h-full bg-white dark:bg-ink-900 rounded-[14px] flex items-center justify-center">
+                  <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-terracotta-500" />
+                </div>
+              </div>
+              <div>
+                <span className="text-lg sm:text-xl font-serif font-bold tracking-tight text-stone-900 dark:text-white block leading-tight">
+                  LearnSphere
+                </span>
+                <span className="text-[10px] text-terracotta-600 dark:text-amber-400 tracking-wider font-semibold uppercase block -mt-0.5 font-mono">
+                  Learning Management System
+                </span>
+              </div>
+            </a>
+
+            {/* Center Navigation Links with Active Highlighting */}
+            <nav className="hidden lg:flex items-center gap-1.5 xl:gap-3 text-xs font-semibold text-stone-700 dark:text-stone-200">
+              <a
+                href="#courses"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeSection === 'courses'
+                    ? 'bg-terracotta-500 text-white font-bold shadow-sm'
+                    : 'hover:text-terracotta-600 dark:hover:text-terracotta-400 hover:bg-stone-100 dark:hover:bg-ink-800'
+                }`}
+              >
+                <BookOpen className={`w-3.5 h-3.5 ${activeSection === 'courses' ? 'text-white' : 'text-terracotta-500'}`} />
+                <span>Courses</span>
+              </a>
+
+              <a
+                href="#shorts"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeSection === 'shorts'
+                    ? 'bg-amber-500 text-stone-950 font-bold shadow-sm'
+                    : 'hover:text-amber-600 dark:hover:text-amber-400 hover:bg-stone-100 dark:hover:bg-ink-800'
+                }`}
+              >
+                <Film className={`w-3.5 h-3.5 ${activeSection === 'shorts' ? 'text-stone-950' : 'text-amber-500'}`} />
+                <span>Shorts</span>
+              </a>
+
+              <a
+                href="#studyrooms"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeSection === 'studyrooms'
+                    ? 'bg-jade-600 text-white font-bold shadow-sm'
+                    : 'hover:text-jade-600 dark:hover:text-jade-400 hover:bg-stone-100 dark:hover:bg-ink-800'
+                }`}
+              >
+                <Users className={`w-3.5 h-3.5 ${activeSection === 'studyrooms' ? 'text-white' : 'text-jade-500'}`} />
+                <span>Study Pods</span>
+              </a>
+
+              <a
+                href="#rubric"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeSection === 'rubric'
+                    ? 'bg-terracotta-600 text-white font-bold shadow-sm'
+                    : 'hover:text-terracotta-600 dark:hover:text-amber-400 hover:bg-stone-100 dark:hover:bg-ink-800'
+                }`}
+              >
+                <Terminal className={`w-3.5 h-3.5 ${activeSection === 'rubric' ? 'text-white' : 'text-terracotta-500'}`} />
+                <span>AI Rubric</span>
+              </a>
+
+              <Link
+                to="/bookshelf"
+                className="px-3 py-1.5 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 border border-amber-500/30 transition-all flex items-center gap-1.5 font-bold shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                <span>3D Bookshelf</span>
+              </Link>
+
+              <a
+                href="#masterclasses"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeSection === 'masterclasses'
+                    ? 'bg-blue-600 text-white font-bold shadow-sm'
+                    : 'hover:text-blue-600 dark:hover:text-blue-400 hover:bg-stone-100 dark:hover:bg-ink-800'
+                }`}
+              >
+                <Calendar className={`w-3.5 h-3.5 ${activeSection === 'masterclasses' ? 'text-white' : 'text-blue-500'}`} />
+                <span>Masterclasses</span>
+              </a>
+
+              <a
+                href="#career"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeSection === 'career'
+                    ? 'bg-stone-800 text-white font-bold shadow-sm'
+                    : 'hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-ink-800'
+                }`}
+              >
+                <Briefcase className="w-3.5 h-3.5 text-stone-500" />
+                <span>Careers</span>
+              </a>
+            </nav>
+
+            {/* Right Action Controls & Mobile Toggle */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <ThemeToggle size="sm" />
+              
+              <Link to="/login">
+                <Button size="sm" variant="secondary" className="text-xs px-3 sm:px-4">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/register" className="hidden sm:inline-flex">
+                <Button size="sm" variant="terracotta" className="text-xs shadow-md shadow-terracotta-500/20 font-medium px-4">
+                  Get Started
+                </Button>
+              </Link>
+
+              {/* Mobile Menu Button */}
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-1.5 rounded-xl bg-stone-100 dark:bg-ink-850 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Drawer Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden pt-3 pb-2 border-t border-stone-200 dark:border-ink-800 mt-2 space-y-1 animate-fadeIn">
+              <div className="grid grid-cols-2 gap-1.5 text-xs font-semibold">
+                <a
+                  href="#courses"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-stone-50 dark:bg-ink-850 flex items-center gap-2 text-stone-800 dark:text-stone-200"
+                >
+                  <BookOpen className="w-4 h-4 text-terracotta-500" /> Courses
+                </a>
+                <a
+                  href="#shorts"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-stone-50 dark:bg-ink-850 flex items-center gap-2 text-stone-800 dark:text-stone-200"
+                >
+                  <Film className="w-4 h-4 text-amber-500" /> Shorts (Reels)
+                </a>
+                <a
+                  href="#studyrooms"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-stone-50 dark:bg-ink-850 flex items-center gap-2 text-stone-800 dark:text-stone-200"
+                >
+                  <Users className="w-4 h-4 text-jade-500" /> Study Pods
+                </a>
+                <a
+                  href="#rubric"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-stone-50 dark:bg-ink-850 flex items-center gap-2 text-stone-800 dark:text-stone-200"
+                >
+                  <Terminal className="w-4 h-4 text-terracotta-500" /> AI Rubric
+                </a>
+                <Link
+                  to="/bookshelf"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center gap-2 text-amber-700 dark:text-amber-300 font-bold"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-500" /> 3D Bookshelf
+                </Link>
+                <a
+                  href="#masterclasses"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-stone-50 dark:bg-ink-850 flex items-center gap-2 text-stone-800 dark:text-stone-200"
+                >
+                  <Calendar className="w-4 h-4 text-blue-500" /> Masterclasses
+                </a>
               </div>
             </div>
-            <div>
-              <span className="text-xl font-serif font-bold tracking-tight text-stone-900 dark:text-white block leading-tight">
-                LearnSphere
-              </span>
-              <span className="text-[10px] text-terracotta-600 dark:text-amber-400 tracking-wider font-semibold uppercase block -mt-0.5 font-mono">
-                Learning Management System
-              </span>
-            </div>
-          </Link>
+          )}
+        </header>
+      </div>
 
-          {/* Center Navigation Quick Anchor Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-stone-700 dark:text-stone-200">
-            <a href="#courses" className="hover:text-terracotta-600 dark:hover:text-terracotta-400 transition-colors flex items-center gap-1">
-              <BookOpen className="w-3.5 h-3.5 text-terracotta-500" /> Courses
-            </a>
-            <a href="#shorts" className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1">
-              <Film className="w-3.5 h-3.5 text-amber-500" /> Shorts
-            </a>
-            <a href="#studyrooms" className="hover:text-jade-600 dark:hover:text-jade-400 transition-colors flex items-center gap-1">
-              <Users className="w-3.5 h-3.5 text-jade-500" /> Study Pods
-            </a>
-            <a href="#rubric" className="hover:text-terracotta-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1">
-              <Terminal className="w-3.5 h-3.5 text-terracotta-500" /> AI Rubric
-            </a>
-            <Link to="/bookshelf" className="hover:text-amber-600 dark:hover:text-amber-300 transition-colors flex items-center gap-1 text-amber-600 dark:text-amber-400">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" /> 3D Bookshelf
-            </Link>
-            <a href="#masterclasses" className="hover:text-stone-900 dark:hover:text-white transition-colors flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-blue-500" /> Masterclasses
-            </a>
-          </nav>
-
-          {/* Actions & Theme Toggle */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <ThemeToggle />
-            <Link to="/login">
-              <Button size="sm" variant="secondary" className="text-xs">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" variant="terracotta" className="text-xs shadow-md shadow-terracotta-500/20 font-medium">
-                Get Started Free
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col gap-20 sm:gap-28">
+      {/* =========================================================================
+          MAIN CONTENT AREA (With pt-28 Offset for Fixed Header)
+         ========================================================================= */}
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-28 sm:pt-32 pb-12 flex-1 flex flex-col gap-20 sm:gap-28">
         
         {/* =========================================
             SECTION 1: HERO & INTERACTIVE LMS CARD
@@ -737,10 +897,10 @@ function cosineSimilarity(a, b) {
             {/* Quick Skill Tags */}
             <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-stone-500 dark:text-stone-400 font-mono">
               <span className="text-[11px] uppercase tracking-wider font-bold text-stone-700 dark:text-stone-300">Popular:</span>
-              <span className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700">Full-Stack MERN</span>
-              <span className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700">Generative AI / RAG</span>
-              <span className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700">System Design</span>
-              <span className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700">Kubernetes & SRE</span>
+              <a href="#courses" className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700 hover:text-terracotta-500">Full-Stack MERN</a>
+              <a href="#courses" className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700 hover:text-amber-500">Generative AI / RAG</a>
+              <a href="#courses" className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700 hover:text-jade-500">System Design</a>
+              <a href="#courses" className="px-2.5 py-1 rounded-lg bg-stone-200/70 dark:bg-ink-800 border border-stone-300/60 dark:border-ink-700 hover:text-blue-500">Kubernetes & SRE</a>
             </div>
 
             {/* Live Metrics Row */}
@@ -805,7 +965,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 2: FEATURED COURSES CATALOG PREVIEW
            ========================================= */}
-        <section id="courses" className="w-full space-y-8 scroll-mt-20">
+        <section id="courses" className="w-full space-y-8 scroll-mt-28">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 text-terracotta-700 dark:text-terracotta-300 text-xs font-bold uppercase tracking-wider font-mono border border-terracotta-500/20 mb-2">
@@ -928,7 +1088,7 @@ function cosineSimilarity(a, b) {
                         </span>
                         <button
                           onClick={() => setPreviewSyllabusCourse(null)}
-                          className="text-[11px] text-stone-400 hover:text-stone-600 dark:hover:text-white"
+                          className="text-[11px] text-stone-400 hover:text-stone-600 dark:hover:text-white cursor-pointer"
                         >
                           Close ×
                         </button>
@@ -974,7 +1134,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 3: INTERACTIVE LEARNING SHORTS (REELS) PREVIEW
            ========================================= */}
-        <section id="shorts" className="w-full space-y-8 scroll-mt-20">
+        <section id="shorts" className="w-full space-y-8 scroll-mt-28">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider font-mono border border-amber-500/20 mb-2">
@@ -1071,7 +1231,7 @@ function cosineSimilarity(a, b) {
                     </span>
                     <button
                       onClick={() => setSelectedShort(null)}
-                      className="text-xs font-mono text-stone-400 hover:text-white px-2 py-1 rounded bg-white/10"
+                      className="text-xs font-mono text-stone-400 hover:text-white px-2 py-1 rounded bg-white/10 cursor-pointer"
                     >
                       Close Player ×
                     </button>
@@ -1175,7 +1335,7 @@ function cosineSimilarity(a, b) {
                         variant="amber"
                         disabled={selectedQuizOption === null}
                         onClick={() => setQuizSubmitted(true)}
-                        className="w-full text-xs font-bold py-2.5"
+                        className="w-full text-xs font-bold py-2.5 cursor-pointer"
                       >
                         Submit Answer
                       </Button>
@@ -1196,7 +1356,7 @@ function cosineSimilarity(a, b) {
                               setSelectedQuizOption(null);
                               setQuizSubmitted(false);
                             }}
-                            className="px-3 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-mono text-stone-300"
+                            className="px-3 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-mono text-stone-300 cursor-pointer"
                           >
                             Retry
                           </button>
@@ -1214,7 +1374,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 4: VIRTUAL STUDY ROOMS & LIVE POMODORO PODS
            ========================================= */}
-        <section id="studyrooms" className="w-full space-y-8 scroll-mt-20">
+        <section id="studyrooms" className="w-full space-y-8 scroll-mt-28">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-jade-500/10 text-jade-700 dark:text-jade-400 text-xs font-bold uppercase tracking-wider font-mono border border-jade-500/20 mb-2">
@@ -1315,7 +1475,7 @@ function cosineSimilarity(a, b) {
                 <button
                   type="button"
                   onClick={() => handleTimerModeChange('pomodoro')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                     timerMode === 'pomodoro'
                       ? 'bg-jade-600 text-white font-bold shadow-sm'
                       : 'text-stone-500 hover:text-stone-800 dark:hover:text-white'
@@ -1326,7 +1486,7 @@ function cosineSimilarity(a, b) {
                 <button
                   type="button"
                   onClick={() => handleTimerModeChange('shortBreak')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                     timerMode === 'shortBreak'
                       ? 'bg-jade-600 text-white font-bold shadow-sm'
                       : 'text-stone-500 hover:text-stone-800 dark:hover:text-white'
@@ -1353,7 +1513,7 @@ function cosineSimilarity(a, b) {
                   variant={isTimerRunning ? 'secondary' : 'jade'}
                   icon={isTimerRunning ? Pause : Play}
                   onClick={() => setIsTimerRunning(!isTimerRunning)}
-                  className="text-xs px-5"
+                  className="text-xs px-5 cursor-pointer"
                 >
                   {isTimerRunning ? 'Pause' : 'Start Focus'}
                 </Button>
@@ -1362,7 +1522,7 @@ function cosineSimilarity(a, b) {
                   variant="secondary"
                   icon={RefreshCw}
                   onClick={() => handleTimerModeChange(timerMode)}
-                  className="text-xs"
+                  className="text-xs cursor-pointer"
                 >
                   Reset
                 </Button>
@@ -1377,7 +1537,7 @@ function cosineSimilarity(a, b) {
                 <button
                   type="button"
                   onClick={() => setAudioAmbient(!audioAmbient)}
-                  className={`text-[11px] px-2 py-0.5 rounded font-mono font-semibold transition-all ${
+                  className={`text-[11px] px-2 py-0.5 rounded font-mono font-semibold transition-all cursor-pointer ${
                     audioAmbient
                       ? 'bg-jade-500 text-white'
                       : 'bg-stone-200 dark:bg-ink-800 text-stone-600 dark:text-stone-400'
@@ -1394,7 +1554,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 5: LIVE AI RUBRIC & CODE EVALUATION PLAYGROUND
            ========================================= */}
-        <section id="rubric" className="w-full space-y-8 scroll-mt-20">
+        <section id="rubric" className="w-full space-y-8 scroll-mt-28">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 text-terracotta-700 dark:text-terracotta-300 text-xs font-bold uppercase tracking-wider font-mono border border-terracotta-500/20 mb-2">
@@ -1462,7 +1622,7 @@ function cosineSimilarity(a, b) {
                   icon={isEvaluatingCode ? RefreshCw : Zap}
                   disabled={isEvaluatingCode}
                   onClick={handleRunEvaluation}
-                  className="text-xs shadow-md shadow-terracotta-500/30"
+                  className="text-xs shadow-md shadow-terracotta-500/30 cursor-pointer"
                 >
                   {isEvaluatingCode ? 'Evaluating AST...' : 'Run AI Evaluation'}
                 </Button>
@@ -1576,7 +1736,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 6: 3D INTERACTIVE BOOKSHELF SHOWCASE
            ========================================= */}
-        <section id="bookshelf" className="rounded-3xl p-8 sm:p-12 border border-stone-200 dark:border-terracotta-500/30 bg-gradient-to-br from-stone-100 via-stone-50 to-white dark:from-ink-900 dark:via-ink-850 dark:to-ink-900 relative overflow-hidden shadow-xl scroll-mt-20">
+        <section id="bookshelf-section" className="rounded-3xl p-8 sm:p-12 border border-stone-200 dark:border-terracotta-500/30 bg-gradient-to-br from-stone-100 via-stone-50 to-white dark:from-ink-900 dark:via-ink-850 dark:to-ink-900 relative overflow-hidden shadow-xl scroll-mt-28">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider font-mono border border-amber-500/20">
@@ -1586,7 +1746,7 @@ function cosineSimilarity(a, b) {
                 Interactive Three.js Module Bookshelf
               </h2>
               <p className="text-stone-600 dark:text-stone-300 text-sm leading-relaxed max-w-xl">
-                Experience course materials rendered as real-time 3D books. Inspect spines, rotate dimensional volumes, and jump directly into active learning chapters with WebGL acceleration.
+                Experience course materials rendered as real-time 3D books. Inspect spines, rotate dimensional volumes, and jump directly into active learning chapters with WebGL acceleration. No upfront login required to explore!
               </p>
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link to="/bookshelf">
@@ -1621,7 +1781,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 7: LIVE INDUSTRY MASTERCLASSES & WEBINARS
            ========================================= */}
-        <section id="masterclasses" className="w-full space-y-8 scroll-mt-20">
+        <section id="masterclasses" className="w-full space-y-8 scroll-mt-28">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-bold uppercase tracking-wider font-mono border border-blue-500/20 mb-2">
@@ -1692,7 +1852,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 8: CAREER ROADMAP & ATS RESUME CHECKLIST
            ========================================= */}
-        <section id="career" className="w-full space-y-8 scroll-mt-20">
+        <section id="career" className="w-full space-y-8 scroll-mt-28">
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 text-terracotta-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider font-mono border border-terracotta-500/20 mb-2">
@@ -1814,7 +1974,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 9: STUDENT & ALUMNI SUCCESS TESTIMONIALS
            ========================================= */}
-        <section id="testimonials" className="w-full space-y-8 scroll-mt-20">
+        <section id="testimonials" className="w-full space-y-8 scroll-mt-28">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider font-mono border border-amber-500/20">
               <Award className="w-3.5 h-3.5 text-amber-500" /> Proven Outcomes
@@ -1868,7 +2028,7 @@ function cosineSimilarity(a, b) {
         {/* =========================================
             SECTION 10: FREQUENTLY ASKED QUESTIONS
            ========================================= */}
-        <section id="faq" className="w-full max-w-3xl mx-auto space-y-6 scroll-mt-20">
+        <section id="faq" className="w-full max-w-3xl mx-auto space-y-6 scroll-mt-28">
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 text-terracotta-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider font-mono border border-terracotta-500/20">
               <HelpCircle className="w-3.5 h-3.5 text-terracotta-500" /> Got Questions?
