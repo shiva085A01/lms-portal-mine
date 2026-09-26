@@ -18,7 +18,12 @@ export function CompleteShelfLandingPage(props: LandingPageProps & PageTypograph
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'LMS_NAVIGATE' && event.data?.route) {
-        navigate(event.data.route);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate(`/login?redirect=${encodeURIComponent(event.data.route)}`);
+        } else {
+          navigate(event.data.route);
+        }
       }
     };
     window.addEventListener('message', handleMessage);

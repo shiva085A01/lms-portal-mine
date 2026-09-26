@@ -58,22 +58,9 @@ export const AppRoutes = () => {
           </StudentProtectedRoute>
         }
       />
-      <Route
-        path="/bookshelf"
-        element={
-          <StudentProtectedRoute>
-            <BookshelfPage />
-          </StudentProtectedRoute>
-        }
-      />
-      <Route
-        path="/student/bookshelf"
-        element={
-          <StudentProtectedRoute>
-            <BookshelfPage />
-          </StudentProtectedRoute>
-        }
-      />
+      {/* 3D Bookshelf (Public Access with Login on Book Action) */}
+      <Route path="/bookshelf" element={<BookshelfPage />} />
+      <Route path="/student/bookshelf" element={<BookshelfPage />} />
       <Route
         path="/student/courses"
         element={
