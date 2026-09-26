@@ -3,6 +3,7 @@ import { AdminNavbar } from '../../components/layout/AdminNavbar';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { StudioTiltCard } from '../../components/ui/StudioTiltCard';
 import {
   Video,
   Plus,
@@ -11,6 +12,9 @@ import {
   ExternalLink,
   Users,
   Sparkles,
+  Layers,
+  X,
+  Radio,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -80,95 +84,100 @@ export const AdminSeminars = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-stone-100 dark:bg-ink-950 text-stone-900 dark:text-parchment-100 flex flex-col font-sans selection:bg-terracotta-500/20 selection:text-terracotta-200">
       <AdminNavbar />
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-1 w-full space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-white dark:bg-ink-900/90 border border-stone-200 dark:border-ink-700/80 shadow-xl">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 text-pink-300 text-xs font-semibold mb-2">
-              <Video className="w-3.5 h-3.5" /> Seminar Management
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 border border-terracotta-500/20 text-terracotta-600 dark:text-terracotta-400 text-xs font-semibold uppercase tracking-wider mb-2">
+              <Radio className="w-3.5 h-3.5 text-terracotta-600 dark:text-terracotta-400 animate-pulse" /> Live Broadcast Management
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Live Webinar Schedule</h1>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Schedule masterclasses, track student registrations, and broadcast meeting links.
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-parchment-50">Masterclasses & Webinars</h1>
+            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 max-w-xl mt-1">
+              Publish platform-wide technical sessions, supervise speaker rosters, and broadcast links.
             </p>
           </div>
 
-          <Button size="md" variant="primary" onClick={() => setShowModal(true)} icon={Plus}>
-            Schedule Seminar
+          <Button size="md" variant="terracotta" onClick={() => setShowModal(true)} icon={Plus}>
+            Schedule Masterclass
           </Button>
         </div>
 
         {/* Seminars Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {[1, 2].map((n) => (
-              <div key={n} className="h-48 rounded-2xl bg-slate-900/60 animate-pulse border border-white/5"></div>
+              <div key={n} className="h-56 rounded-3xl bg-stone-100 dark:bg-ink-900/60 animate-pulse border border-stone-200 dark:border-ink-800"></div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {seminars.map((seminar) => (
-              <GlassCard key={seminar._id} className="p-5 flex flex-col justify-between">
+              <StudioTiltCard key={seminar._id} className="p-6 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-terracotta-500/40 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                    <span className="text-[10px] uppercase font-bold text-pink-400 bg-pink-500/10 px-2 py-0.5 rounded-full border border-pink-500/20">
+                  <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 mb-3">
+                    <span className="text-[10px] font-mono font-semibold uppercase px-2.5 py-1 rounded-full bg-terracotta-500/15 text-terracotta-700 dark:text-terracotta-300 border border-terracotta-500/30">
                       {seminar.category}
                     </span>
-                    <span className="flex items-center gap-1 text-slate-300">
-                      <Users className="w-3.5 h-3.5 text-brand-400" />
-                      {seminar.registrations?.length || 0} Registered
+                    <span className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 font-mono text-xs">
+                      <Users className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+                      {seminar.registrations?.length || 0} RSVPs
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-white mb-1">{seminar.title}</h3>
-                  <p className="text-xs text-slate-400 line-clamp-2 mb-3">{seminar.description}</p>
+                  <h3 className="text-lg font-serif font-bold text-stone-900 dark:text-parchment-50 mb-2">{seminar.title}</h3>
+                  <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 mb-4 leading-relaxed">{seminar.description}</p>
 
-                  <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 text-xs text-slate-300 flex items-center justify-between">
+                  <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-ink-900/70 border border-stone-200 dark:border-ink-800 text-xs text-stone-700 dark:text-stone-300 flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-white">{seminar.speaker?.name}</p>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="font-semibold text-stone-900 dark:text-parchment-100">{seminar.speaker?.name}</p>
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400">
                         {seminar.speaker?.role} • {seminar.speaker?.company}
                       </p>
                     </div>
-                    <span className="text-xs text-slate-400">
-                      {new Date(seminar.date).toLocaleDateString()}
-                    </span>
+                    <div className="text-right font-mono text-[11px] text-stone-500 dark:text-stone-400">
+                      <p>{new Date(seminar.date).toLocaleDateString()}</p>
+                      <p className="text-amber-600 dark:text-amber-400 font-semibold">{seminar.time}</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-4">
+                <div className="pt-4 border-t border-stone-100 dark:border-ink-700/70 flex items-center justify-between mt-5">
                   <a
                     href={seminar.meetingLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-brand-400 hover:underline flex items-center gap-1"
+                    className="text-xs text-terracotta-600 dark:text-terracotta-400 hover:underline font-medium flex items-center gap-1.5"
                   >
-                    Meeting Link <ExternalLink className="w-3 h-3" />
+                    Launch Stream Link <ExternalLink className="w-3.5 h-3.5" />
                   </a>
+                  <span className="text-[11px] font-mono text-stone-500">{seminar.duration || '90 mins'}</span>
                 </div>
-              </GlassCard>
+              </StudioTiltCard>
             ))}
           </div>
         )}
 
         {/* Schedule Modal */}
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-            <div className="relative w-full max-w-lg glass-card p-6 border-pink-500/30">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                <h3 className="text-lg font-bold text-white">Schedule New Webinar</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 dark:bg-ink-950/80 backdrop-blur-md animate-fade-in">
+            <div className="relative w-full max-w-lg bg-white dark:bg-ink-900 border border-stone-200 dark:border-ink-700 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-ink-800">
+                <div>
+                  <h3 className="text-xl font-serif font-bold text-stone-900 dark:text-parchment-50">Schedule LMS Masterclass</h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">Broadcast an interactive session to all students</p>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                  className="p-2 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-parchment-100 hover:bg-stone-100 dark:hover:bg-ink-800 transition-colors"
                 >
-                  ✕
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateSeminar} className="space-y-4">
+              <form onSubmit={handleCreateSeminar} className="space-y-4 text-xs">
                 <Input
                   label="Seminar Title"
                   placeholder="e.g. Distributed Caching with Redis"
@@ -222,18 +231,18 @@ export const AdminSeminars = () => {
                 </div>
 
                 <Input
-                  label="Google Meet / Zoom URL"
+                  label="Broadcast URL (Zoom / Google Meet)"
                   placeholder="https://meet.google.com/..."
                   value={newSeminar.meetingLink}
                   onChange={(e) => setNewSeminar({ ...newSeminar, meetingLink: e.target.value })}
                 />
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-                  <Button size="sm" variant="glass" onClick={() => setShowModal(false)}>
+                <div className="flex justify-end gap-3 pt-4 border-t border-stone-200 dark:border-ink-800">
+                  <Button size="sm" variant="outline" onClick={() => setShowModal(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit" size="sm" variant="primary">
-                    Publish Webinar
+                  <Button type="submit" size="sm" variant="terracotta">
+                    Publish Masterclass
                   </Button>
                 </div>
               </form>

@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Button = ({
   children,
-  variant = 'primary', // 'primary' | 'secondary' | 'outline' | 'glass' | 'danger'
+  variant = 'primary', // 'primary' | 'terracotta' | 'amber' | 'jade' | 'secondary' | 'outline' | 'glass' | 'ghost' | 'danger'
   size = 'md', // 'sm' | 'md' | 'lg'
   isLoading = false,
   disabled = false,
@@ -12,7 +12,7 @@ export const Button = ({
   onClick,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none cursor-pointer';
 
   const sizes = {
     sm: 'px-3.5 py-1.5 text-xs gap-1.5',
@@ -21,11 +21,15 @@ export const Button = ({
   };
 
   const variants = {
-    primary: 'bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-500 text-white shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:brightness-110 focus:ring-brand-500 border border-brand-400/30',
-    secondary: 'bg-slate-800 text-slate-100 hover:bg-slate-700/80 border border-slate-700/60 focus:ring-slate-500',
-    glass: 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/15 hover:border-white/30 shadow-glass focus:ring-white/30',
-    outline: 'bg-transparent text-slate-200 border border-slate-700 hover:border-brand-500 hover:text-brand-400 focus:ring-brand-500',
-    danger: 'bg-rose-600 text-white hover:bg-rose-500 focus:ring-rose-500 shadow-lg shadow-rose-600/30',
+    primary: 'bg-gradient-to-r from-terracotta-600 via-terracotta-500 to-amber-600 text-white shadow-md shadow-terracotta-500/25 hover:shadow-terracotta-500/40 hover:brightness-105 focus:ring-terracotta-500 border border-terracotta-400/30',
+    terracotta: 'bg-terracotta-500 hover:bg-terracotta-600 text-white shadow-md shadow-terracotta-500/25 hover:shadow-terracotta-500/40 focus:ring-terracotta-500 border border-terracotta-400/30',
+    amber: 'bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold shadow-md shadow-amber-500/25 hover:shadow-amber-500/40 focus:ring-amber-500 border border-amber-400/30',
+    jade: 'bg-jade-500 hover:bg-jade-600 text-white shadow-md shadow-jade-500/25 hover:shadow-jade-500/40 focus:ring-jade-500 border border-jade-400/30',
+    secondary: 'bg-stone-100 dark:bg-ink-800 text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-ink-750 hover:text-stone-950 dark:hover:text-white border border-stone-300 dark:border-ink-700 focus:ring-terracotta-500 shadow-sm',
+    glass: 'bg-white/80 dark:bg-ink-850/80 backdrop-blur-md text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-ink-700 hover:border-terracotta-500/40 shadow-sm focus:ring-terracotta-500',
+    outline: 'bg-transparent text-stone-700 dark:text-stone-300 border border-stone-300 dark:border-ink-700 hover:border-terracotta-500 hover:text-terracotta-600 dark:hover:text-terracotta-400 focus:ring-terracotta-500',
+    ghost: 'bg-transparent text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-ink-800 focus:ring-stone-400',
+    danger: 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500 shadow-md shadow-rose-900/30 border border-rose-500/30',
   };
 
   return (
@@ -33,7 +37,7 @@ export const Button = ({
       type={type}
       disabled={disabled || isLoading}
       onClick={onClick}
-      className={`${baseStyles} ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`${baseStyles} ${sizes[size]} ${variants[variant] || variants.primary} ${className}`}
       {...props}
     >
       {isLoading ? (

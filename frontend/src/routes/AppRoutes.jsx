@@ -17,6 +17,8 @@ import BookshelfPage from '../pages/BookshelfPage';
 // Student Pages
 import StudentDashboard from '../pages/student/StudentDashboard';
 import CourseCatalog from '../pages/student/CourseCatalog';
+import CourseLearn from '../pages/student/CourseLearn';
+import StudentCertificates from '../pages/student/StudentCertificates';
 import ScrollableLearning from '../pages/student/ScrollableLearning';
 import StudyRooms from '../pages/student/StudyRooms';
 import Seminars from '../pages/student/Seminars';
@@ -28,10 +30,12 @@ import InstructorDashboard from '../pages/instructor/InstructorDashboard';
 import InstructorCourses from '../pages/instructor/InstructorCourses';
 import InstructorSeminars from '../pages/instructor/InstructorSeminars';
 import InstructorGrading from '../pages/instructor/InstructorGrading';
+import InstructorStudents from '../pages/instructor/InstructorStudents';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminUsers from '../pages/admin/AdminUsers';
+import AdminCourses from '../pages/admin/AdminCourses';
 import AdminSeminars from '../pages/admin/AdminSeminars';
 import AdminFeedback from '../pages/admin/AdminFeedback';
 
@@ -75,6 +79,22 @@ export const AppRoutes = () => {
         element={
           <StudentProtectedRoute>
             <CourseCatalog />
+          </StudentProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/courses/:id/learn"
+        element={
+          <StudentProtectedRoute>
+            <CourseLearn />
+          </StudentProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/certificates"
+        element={
+          <StudentProtectedRoute>
+            <StudentCertificates />
           </StudentProtectedRoute>
         }
       />
@@ -137,18 +157,26 @@ export const AppRoutes = () => {
         }
       />
       <Route
-        path="/instructor/seminars"
-        element={
-          <InstructorProtectedRoute>
-            <InstructorSeminars />
-          </InstructorProtectedRoute>
-        }
-      />
-      <Route
         path="/instructor/grading"
         element={
           <InstructorProtectedRoute>
             <InstructorGrading />
+          </InstructorProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/students"
+        element={
+          <InstructorProtectedRoute>
+            <InstructorStudents />
+          </InstructorProtectedRoute>
+        }
+      />
+      <Route
+        path="/instructor/seminars"
+        element={
+          <InstructorProtectedRoute>
+            <InstructorSeminars />
           </InstructorProtectedRoute>
         }
       />
@@ -167,6 +195,14 @@ export const AppRoutes = () => {
         element={
           <AdminProtectedRoute>
             <AdminUsers />
+          </AdminProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/courses"
+        element={
+          <AdminProtectedRoute>
+            <AdminCourses />
           </AdminProtectedRoute>
         }
       />

@@ -4,109 +4,162 @@
 
 @layer base {
   :root {
-    --color-bg-base: #090d16;
-    --color-glass-card: rgba(17, 24, 39, 0.7);
-    --color-glass-border: rgba(255, 255, 255, 0.08);
+    --color-bg-base: #faf7f2;
+    --color-text-base: #1c1917;
+    --color-ink-card: rgba(255, 255, 255, 0.9);
+    --color-border-warm: rgba(28, 25, 23, 0.08);
+    --color-accent-terracotta: #c54e2b;
+    --color-accent-amber: #d97706;
+    --color-accent-jade: #2a9d8f;
+  }
+
+  html.dark {
+    --color-bg-base: #0c0b0a;
+    --color-text-base: #f5efe6;
+    --color-ink-card: rgba(28, 25, 23, 0.85);
+    --color-border-warm: rgba(235, 225, 210, 0.08);
+    --color-accent-terracotta: #d95d39;
+    --color-accent-amber: #f59e0b;
+    --color-accent-jade: #2a9d8f;
   }
 
   body {
-    background-color: #090d16;
-    color: #f1f5f9;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-base);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.01em;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
-/* Glassmorphism Design System */
+/* Warm & Tactile LMS Component Utilities */
 @layer components {
-  .glass-panel {
-    background: rgba(15, 23, 42, 0.65);
+  /* LMS Panels */
+  .studio-panel {
+    background: #ffffff;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid #e7e0d6;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    color: var(--color-text-base);
   }
 
-  .glass-panel-subtle {
-    background: rgba(30, 41, 59, 0.45);
+  html.dark .studio-panel {
+    background: #181614;
+    border: 1px solid rgba(235, 225, 210, 0.1);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+    color: var(--color-text-base);
+  }
+
+  .studio-panel-subtle {
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid #e7e0d6;
+    color: var(--color-text-base);
   }
 
-  .glass-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  html.dark .studio-panel-subtle {
+    background: rgba(34, 30, 26, 0.75);
+    border: 1px solid rgba(235, 225, 210, 0.08);
+    color: var(--color-text-base);
+  }
+
+  /* Tactile LMS Card */
+  .studio-card, .glass-card {
+    background-color: #ffffff;
+    border: 1px solid #e7e0d6;
     border-radius: 1rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    color: #1c1917;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .glass-card:hover {
-    border-color: rgba(99, 102, 241, 0.3);
-    box-shadow: 0 12px 35px rgba(99, 102, 241, 0.15);
+  html.dark .studio-card, html.dark .glass-card {
+    background-color: #181614;
+    border: 1px solid rgba(235, 225, 210, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    color: #f5efe6;
   }
 
-  .glass-input {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #f8fafc;
+  .studio-card:hover, .glass-card:hover {
+    border-color: rgba(217, 93, 57, 0.4);
+    box-shadow: 0 14px 34px -4px rgba(217, 93, 57, 0.15);
+  }
+
+  /* Tactile Input */
+  .studio-input, .glass-input {
+    background: #ffffff;
+    border: 1px solid #d6cebf;
+    color: #1c1917;
     border-radius: 0.75rem;
     padding: 0.75rem 1rem;
     transition: all 0.2s ease;
   }
 
-  .glass-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-    background: rgba(15, 23, 42, 0.85);
+  html.dark .studio-input, html.dark .glass-input {
+    background: #141210;
+    border: 1px solid rgba(235, 225, 210, 0.14);
+    color: #fcfbf9;
   }
 
+  .studio-input:focus, .glass-input:focus {
+    outline: none;
+    border-color: #d95d39;
+    box-shadow: 0 0 0 3px rgba(217, 93, 57, 0.22);
+  }
+
+  /* Warm Typography & Gradients */
   .gradient-text {
-    background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #ec4899 100%);
+    background: linear-gradient(135deg, #1c1917 0%, #d95d39 60%, #b45309 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .gradient-accent {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  html.dark .gradient-text {
+    background: linear-gradient(135deg, #fbf7ee 0%, #f39c12 40%, #d95d39 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  .gradient-border {
+  .editorial-heading {
+    font-family: 'Newsreader', Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+
+  /* Tactile Button Press */
+  .btn-tactile {
     position: relative;
-    border-radius: 1rem;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(236, 72, 153, 0.2), transparent);
-    padding: 1px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .gradient-border-content {
-    background: #0d1322;
-    border-radius: calc(1rem - 1px);
+  .btn-tactile:active {
+    transform: translateY(1.5px);
   }
 }
 
-/* Custom modern scrollbar */
+/* Warm custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(28, 25, 23, 0.05);
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: rgba(20, 18, 16, 0.8);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.3);
+  background: rgba(217, 93, 57, 0.35);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.6);
+  background: rgba(217, 93, 57, 0.65);
 }
 
-/* Hide scrollbar for short video scrollable feed */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

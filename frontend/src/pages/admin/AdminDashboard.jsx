@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { AdminNavbar } from '../../components/layout/AdminNavbar';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button } from '../../components/ui/Button';
+import { StudioTiltCard } from '../../components/ui/StudioTiltCard';
 import {
   ShieldCheck,
   Users,
@@ -17,6 +18,9 @@ import {
   Layers,
   Activity,
   Plus,
+  Cpu,
+  Database,
+  CheckCircle2,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -54,32 +58,42 @@ export const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-stone-100 dark:bg-ink-950 text-stone-900 dark:text-parchment-100 flex flex-col font-sans selection:bg-terracotta-500/20 selection:text-terracotta-200">
       <AdminNavbar />
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
-        {/* Banner */}
-        <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 bg-gradient-to-r from-amber-950/40 via-slate-900/80 to-brand-950/40 border border-amber-500/20 shadow-glow">
-          <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold mb-3">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> Platform Operations & Governance
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mb-2">
-              System Administration
-            </h1>
-            <p className="text-sm text-slate-400 leading-relaxed mb-4">
-              Real-time platform metrics aggregated directly from your MongoDB database. Manage courses, supervise student feedback, and oversee webinars.
-            </p>
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-1 w-full space-y-8">
+        {/* Operations Header */}
+        <div className="relative overflow-hidden rounded-3xl p-6 sm:p-10 bg-white dark:bg-gradient-to-br dark:from-ink-900 dark:via-ink-850 dark:to-ink-900 border border-stone-200 dark:border-ink-700/80 shadow-xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta-500/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/5 rounded-full blur-2xl pointer-events-none -ml-20 -mb-20"></div>
 
-            <div className="flex flex-wrap gap-3">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-500/10 border border-terracotta-500/20 text-terracotta-600 dark:text-terracotta-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                <ShieldCheck className="w-3.5 h-3.5" /> Operations & System Governance
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 dark:text-parchment-50 tracking-tight mb-2">
+                Executive Control Plane
+              </h1>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-xl">
+                Real-time telemetries aggregated directly from the MongoDB cluster. Supervise active student enrollments, faculty curriculums, and platform health.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
               <Link to="/admin/users">
-                <Button size="sm" variant="primary" icon={Users}>
-                  Manage Users
+                <Button size="sm" variant="terracotta" icon={Users}>
+                  Manage Directory
                 </Button>
               </Link>
               <Link to="/admin/seminars">
-                <Button size="sm" variant="glass" icon={Video}>
-                  Manage Seminars
+                <Button size="sm" variant="secondary" icon={Video}>
+                  Broadcast Seminars
+                </Button>
+              </Link>
+              <Link to="/admin/feedback">
+                <Button size="sm" variant="outline" icon={MessageSquare}>
+                  Student Sentiment
                 </Button>
               </Link>
             </div>
@@ -87,144 +101,162 @@ export const AdminDashboard = () => {
         </div>
 
         {/* Real Statistics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <GlassCard className="p-4 border-brand-500/20">
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
-              <span className="text-[11px] font-semibold uppercase">Students</span>
-              <Users className="w-4 h-4 text-brand-400" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <StudioTiltCard className="p-4 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-terracotta-500/40">
+            <div className="flex items-center justify-between text-stone-500 dark:text-stone-400 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Students</span>
+              <Users className="w-4 h-4 text-terracotta-500 dark:text-terracotta-400" />
             </div>
-            <p className="text-2xl font-bold text-white">{metrics.totalStudents}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Registered in DB</p>
-          </GlassCard>
+            <p className="text-2xl font-serif font-bold text-stone-900 dark:text-parchment-50">{metrics.totalStudents}</p>
+            <p className="text-[10px] text-stone-500 mt-1 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-jade-500 dark:text-jade-400" /> Active in DB
+            </p>
+          </StudioTiltCard>
 
-          <GlassCard className="p-4 border-emerald-500/20">
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
-              <span className="text-[11px] font-semibold uppercase">Courses</span>
-              <BookOpen className="w-4 h-4 text-emerald-400" />
+          <StudioTiltCard className="p-4 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-amber-500/40">
+            <div className="flex items-center justify-between text-stone-500 dark:text-stone-400 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Courses</span>
+              <BookOpen className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             </div>
-            <p className="text-2xl font-bold text-emerald-400">{metrics.totalCourses}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Live catalog</p>
-          </GlassCard>
+            <p className="text-2xl font-serif font-bold text-amber-600 dark:text-amber-400">{metrics.totalCourses}</p>
+            <p className="text-[10px] text-stone-500 mt-1">Live course catalog</p>
+          </StudioTiltCard>
 
-          <GlassCard className="p-4 border-indigo-500/20">
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
-              <span className="text-[11px] font-semibold uppercase">Enrollments</span>
-              <TrendingUp className="w-4 h-4 text-indigo-400" />
+          <StudioTiltCard className="p-4 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-jade-500/40">
+            <div className="flex items-center justify-between text-stone-500 dark:text-stone-400 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Enrollments</span>
+              <TrendingUp className="w-4 h-4 text-jade-500 dark:text-jade-400" />
             </div>
-            <p className="text-2xl font-bold text-indigo-400">{metrics.totalEnrollments}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Total active</p>
-          </GlassCard>
+            <p className="text-2xl font-serif font-bold text-jade-600 dark:text-jade-400">{metrics.totalEnrollments}</p>
+            <p className="text-[10px] text-stone-500 mt-1">Active learners</p>
+          </StudioTiltCard>
 
-          <GlassCard className="p-4 border-amber-500/20">
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
-              <span className="text-[11px] font-semibold uppercase">Study Rooms</span>
-              <Layers className="w-4 h-4 text-amber-400" />
+          <StudioTiltCard className="p-4 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-marigold-500/40">
+            <div className="flex items-center justify-between text-stone-500 dark:text-stone-400 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Study Pods</span>
+              <Layers className="w-4 h-4 text-marigold-500 dark:text-marigold-400" />
             </div>
-            <p className="text-2xl font-bold text-amber-400">{metrics.totalStudyRooms}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Collaboration hubs</p>
-          </GlassCard>
+            <p className="text-2xl font-serif font-bold text-amber-700 dark:text-marigold-400">{metrics.totalStudyRooms}</p>
+            <p className="text-[10px] text-stone-500 mt-1">Peer hubs online</p>
+          </StudioTiltCard>
 
-          <GlassCard className="p-4 border-pink-500/20">
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
-              <span className="text-[11px] font-semibold uppercase">Seminars</span>
-              <Video className="w-4 h-4 text-pink-400" />
+          <StudioTiltCard className="p-4 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-terracotta-500/40">
+            <div className="flex items-center justify-between text-stone-500 dark:text-stone-400 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Seminars</span>
+              <Video className="w-4 h-4 text-terracotta-500 dark:text-terracotta-400" />
             </div>
-            <p className="text-2xl font-bold text-pink-400">{metrics.totalSeminars}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Scheduled webinars</p>
-          </GlassCard>
+            <p className="text-2xl font-serif font-bold text-terracotta-600 dark:text-terracotta-400">{metrics.totalSeminars}</p>
+            <p className="text-[10px] text-stone-500 mt-1">Scheduled webinars</p>
+          </StudioTiltCard>
 
-          <GlassCard className="p-4 border-cyan-500/20">
-            <div className="flex items-center justify-between text-slate-400 mb-1.5">
-              <span className="text-[11px] font-semibold uppercase">Feedback</span>
-              <MessageSquare className="w-4 h-4 text-cyan-400" />
+          <StudioTiltCard className="p-4 bg-white dark:bg-ink-850/90 border-stone-200 dark:border-ink-700/80 hover:border-amber-500/40">
+            <div className="flex items-center justify-between text-stone-500 dark:text-stone-400 mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Feedback</span>
+              <MessageSquare className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             </div>
-            <p className="text-2xl font-bold text-cyan-400">{metrics.totalFeedbacks}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Student submissions</p>
-          </GlassCard>
+            <p className="text-2xl font-serif font-bold text-amber-600 dark:text-amber-400">{metrics.totalFeedbacks}</p>
+            <p className="text-[10px] text-stone-500 mt-1">Weekly surveys</p>
+          </StudioTiltCard>
         </div>
 
         {/* Real Tables Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Registered Users */}
-          <GlassCard className="p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+          <div className="p-6 rounded-3xl bg-white dark:bg-ink-850/80 border border-stone-200 dark:border-ink-700/70 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200 dark:border-ink-700/60">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-brand-400" />
-                <h3 className="font-bold text-sm text-white">Recent User Registrations</h3>
+                <Users className="w-4 h-4 text-terracotta-500 dark:text-terracotta-400" />
+                <h3 className="font-serif font-bold text-base text-stone-900 dark:text-parchment-100">Recent User Registrations</h3>
               </div>
-              <Link to="/admin/users" className="text-xs text-brand-400 hover:underline">
-                View All Users →
+              <Link to="/admin/users" className="text-xs text-terracotta-600 dark:text-terracotta-400 hover:underline font-medium flex items-center gap-1">
+                View All Directory <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
 
-            <div className="space-y-3">
-              {analytics?.recentUsers?.map((u) => (
-                <div
-                  key={u._id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-white/5 text-xs"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-brand-600/30 border border-brand-500/40 flex items-center justify-center font-bold text-xs text-brand-300">
-                      {u.name?.charAt(0) || 'U'}
+            <div className="space-y-2.5">
+              {loading ? (
+                [1, 2, 3].map((n) => (
+                  <div key={n} className="h-14 rounded-2xl bg-stone-100 dark:bg-ink-900/60 border border-stone-200 dark:border-ink-800 animate-pulse"></div>
+                ))
+              ) : analytics?.recentUsers?.length > 0 ? (
+                analytics.recentUsers.map((u) => (
+                  <div
+                    key={u._id}
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 dark:bg-ink-900/60 border border-stone-200 dark:border-ink-800/80 hover:border-stone-300 dark:hover:border-ink-700 transition-colors text-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-terracotta-500/10 border border-terracotta-500/20 flex items-center justify-center font-serif font-bold text-xs text-terracotta-600 dark:text-terracotta-300">
+                        {u.name?.charAt(0) || 'U'}
+                      </div>
+                      <div>
+                        <p className="font-medium text-stone-900 dark:text-parchment-100">{u.name}</p>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">{u.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold text-slate-200">{u.name}</p>
-                      <p className="text-[10px] text-slate-400">{u.email}</p>
-                    </div>
-                  </div>
 
-                  <div className="text-right">
-                    <span
-                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                        u.role === 'admin'
-                          ? 'bg-amber-500/20 text-amber-300'
-                          : u.role === 'instructor'
-                          ? 'bg-pink-500/20 text-pink-300'
-                          : 'bg-brand-500/20 text-brand-300'
-                      }`}
-                    >
-                      {u.role}
-                    </span>
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      {new Date(u.createdAt).toLocaleDateString()}
-                    </p>
+                    <div className="text-right flex items-center gap-3">
+                      <span
+                        className={`text-[10px] font-mono font-semibold uppercase px-2.5 py-1 rounded-full ${
+                          u.role === 'admin'
+                            ? 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30'
+                            : u.role === 'instructor'
+                            ? 'bg-terracotta-500/15 text-terracotta-600 dark:text-terracotta-300 border border-terracotta-500/30'
+                            : 'bg-jade-500/15 text-jade-600 dark:text-jade-300 border border-jade-500/30'
+                        }`}
+                      >
+                        {u.role}
+                      </span>
+                      <p className="text-[10px] text-stone-400 dark:text-stone-500 hidden sm:block">
+                        {new Date(u.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-xs text-stone-500 py-4 text-center">No recent user registrations.</p>
+              )}
             </div>
-          </GlassCard>
+          </div>
 
           {/* Catalog Courses */}
-          <GlassCard className="p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+          <div className="p-6 rounded-3xl bg-white dark:bg-ink-850/80 border border-stone-200 dark:border-ink-700/70 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200 dark:border-ink-700/60">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-bold text-sm text-white">Production Courses in DB</h3>
+                <BookOpen className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                <h3 className="font-serif font-bold text-base text-stone-900 dark:text-parchment-100">Live LMS Courses in DB</h3>
               </div>
-              <Link to="/student/courses" className="text-xs text-emerald-400 hover:underline">
-                View Catalog →
+              <Link to="/student/courses" className="text-xs text-amber-600 dark:text-amber-400 hover:underline font-medium flex items-center gap-1">
+                Explore Catalog <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
 
-            <div className="space-y-3">
-              {analytics?.recentCourses?.map((c) => (
-                <div
-                  key={c._id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-white/5 text-xs"
-                >
-                  <div className="min-w-0 pr-3">
-                    <p className="font-bold text-slate-200 truncate">{c.title}</p>
-                    <span className="text-[10px] text-slate-400">{c.category}</span>
-                  </div>
+            <div className="space-y-2.5">
+              {loading ? (
+                [1, 2, 3].map((n) => (
+                  <div key={n} className="h-14 rounded-2xl bg-stone-100 dark:bg-ink-900/60 border border-stone-200 dark:border-ink-800 animate-pulse"></div>
+                ))
+              ) : analytics?.recentCourses?.length > 0 ? (
+                analytics.recentCourses.map((c) => (
+                  <div
+                    key={c._id}
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 dark:bg-ink-900/60 border border-stone-200 dark:border-ink-800/80 hover:border-stone-300 dark:hover:border-ink-700 transition-colors text-xs"
+                  >
+                    <div className="min-w-0 pr-3">
+                      <p className="font-medium text-stone-900 dark:text-parchment-100 truncate">{c.title}</p>
+                      <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono uppercase">{c.category}</span>
+                    </div>
 
-                  <div className="text-right shrink-0">
-                    <span className="text-emerald-400 font-bold">{c.enrolledStudentsCount} Enrolled</span>
-                    <p className="text-[10px] text-amber-400 mt-0.5">★ {c.rating}</p>
+                    <div className="text-right shrink-0">
+                      <span className="text-amber-600 dark:text-amber-400 font-semibold">{c.enrolledStudentsCount || 0} Enrolled</span>
+                      <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-0.5">★ {c.rating || 5.0}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-xs text-stone-500 py-4 text-center">No LMS courses registered yet.</p>
+              )}
             </div>
-          </GlassCard>
+          </div>
         </div>
       </main>
     </div>

@@ -20,7 +20,7 @@ const enrollmentSchema = new mongoose.Schema(
     },
     completedLessons: [
       {
-        type: String, // lesson _id or title
+        type: String, // lesson title or ID
       },
     ],
     lastAccessedLesson: {
@@ -32,9 +32,21 @@ const enrollmentSchema = new mongoose.Schema(
       enum: ['active', 'completed', 'dropped'],
       default: 'active',
     },
+    certificateIssued: {
+      type: Boolean,
+      default: false,
+    },
+    certificateId: {
+      type: String,
+      default: '',
+    },
     enrolledAt: {
       type: Date,
       default: Date.now,
+    },
+    completedAt: {
+      type: Date,
+      default: null,
     },
     lastAccessedAt: {
       type: Date,
@@ -46,7 +58,6 @@ const enrollmentSchema = new mongoose.Schema(
   }
 );
 
-// Prevent duplicate enrollments for the same student and course
 enrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
 
 const Enrollment = mongoose.model('Enrollment', enrollmentSchema);

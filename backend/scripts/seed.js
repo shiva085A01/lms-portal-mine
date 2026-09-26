@@ -1,8 +1,18 @@
 import 'dotenv/config';
+import dns from 'dns';
 import mongoose from 'mongoose';
+
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore
+}
 import User from '../src/models/User.js';
 import Course from '../src/models/Course.js';
 import Enrollment from '../src/models/Enrollment.js';
+import Submission from '../src/models/Submission.js';
+import QuizAttempt from '../src/models/QuizAttempt.js';
+import Certificate from '../src/models/Certificate.js';
 import LearningShort from '../src/models/LearningShort.js';
 import StudyRoom from '../src/models/StudyRoom.js';
 import Seminar from '../src/models/Seminar.js';
@@ -18,45 +28,44 @@ const seedDatabase = async () => {
   }
 
   try {
-    await mongoose.connect(uri);
-    console.log('✅ Connected to MongoDB Atlas / Local for full seeding...');
+    let connected = false;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`⏳ Attempting MongoDB connection (attempt ${attempt}/3)...`);
+        await mongoose.connect(uri, {
+          serverSelectionTimeoutMS: 15000,
+          connectTimeoutMS: 15000,
+          socketTimeoutMS: 30000,
+        });
+        connected = true;
+        console.log('✅ Connected to MongoDB Atlas / Local for seeding...');
+        break;
+      } catch (connErr) {
+        console.warn(`⚠️ Connection attempt ${attempt} failed: ${connErr.message}`);
+        if (attempt === 3) throw connErr;
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
 
-    // Clean existing collections to avoid stale corrupted references
-    await Promise.all([
-      User.deleteMany({}),
-      Course.deleteMany({}),
-      Enrollment.deleteMany({}),
-      LearningShort.deleteMany({}),
-      StudyRoom.deleteMany({}),
-      Seminar.deleteMany({}),
-      CareerResource.deleteMany({}),
-      Feedback.deleteMany({}),
-      Notification.deleteMany({}),
-    ]);
+    // Clean existing collections sequentially
+    console.log('🧹 Purging previous collections...');
+    for (const Model of [User, Course, Enrollment, Submission, QuizAttempt, Certificate, LearningShort, StudyRoom, Seminar, CareerResource, Feedback, Notification]) {
+      await Model.deleteMany({});
+    }
 
-    console.log('🧹 Purged previous test collections.');
+    console.log('🧹 Cleaned existing database collections.');
 
-    // 1. Seed Users
+    // 1. Seed Users (Admin, Instructor, Students)
     const admin = await User.create({
       name: 'System Administrator',
       email: 'admin@lms.com',
       password: 'Password@123',
       role: 'admin',
       phone: '+1 (555) 019-2831',
-      bio: 'Platform Lead and Academic Administrator for LearnSphere LMS.',
-      skills: ['Full-Stack', 'System Architecture', 'Academic Pedagogy'],
-      interests: ['EdTech', 'AI Systems', 'Scalable Architectures'],
-    });
-
-    const student = await User.create({
-      name: 'Sarah Connor',
-      email: 'student@lms.com',
-      password: 'Password@123',
-      role: 'student',
-      phone: '+1 (555) 392-8172',
-      bio: 'Passionate student mastering full-stack web engineering and algorithms.',
-      skills: ['JavaScript', 'React', 'HTML/CSS', 'Python'],
-      interests: ['Web Development', 'Algorithms', 'UI/UX Design'],
+      bio: 'Platform Director and System Administrator for LearnSphere LMS.',
+      skills: ['System Architecture', 'Cloud Infrastructure', 'Academic Pedagogy', 'Security & Governance'],
+      interests: ['EdTech', 'AI Systems', 'Distributed Systems'],
+      isActive: true,
     });
 
     const instructor = await User.create({
@@ -65,19 +74,44 @@ const seedDatabase = async () => {
       password: 'Password@123',
       role: 'instructor',
       phone: '+1 (555) 481-9204',
-      bio: 'Senior Software Architect and Course Author with 15+ years experience.',
-      skills: ['Distributed Systems', 'Algorithms', 'MERN Stack', 'Docker'],
-      interests: ['Computer Science Education', 'Clean Architecture'],
+      bio: 'Senior Software Architect and University Professor with 15+ years of engineering and curriculum design experience.',
+      skills: ['Full-Stack MERN', 'Distributed Algorithms', 'System Design', 'Docker', 'AI Applications'],
+      interests: ['Computer Science Education', 'Clean Code Architecture', 'Mentorship'],
+      isActive: true,
     });
 
-    console.log('👤 Seeded Admin, Student, and Instructor users.');
+    const student = await User.create({
+      name: 'Sarah Connor',
+      email: 'student@lms.com',
+      password: 'Password@123',
+      role: 'student',
+      phone: '+1 (555) 392-8172',
+      bio: 'Undergraduate student and software engineering enthusiast specializing in full-stack web applications and algorithms.',
+      skills: ['JavaScript (ES6+)', 'React 18', 'Node.js', 'Tailwind CSS', 'Python'],
+      interests: ['Web Engineering', 'Competitive Programming', 'UI/UX Design'],
+      isActive: true,
+    });
 
-    // 2. Seed Real Comprehensive Courses
+    const student2 = await User.create({
+      name: 'Alex Rivera',
+      email: 'alex@lms.com',
+      password: 'Password@123',
+      role: 'student',
+      phone: '+1 (555) 829-1940',
+      bio: 'Aspiring Cloud & DevOps engineer learning backend containerization and REST APIs.',
+      skills: ['Docker', 'Linux', 'Node.js', 'MongoDB'],
+      interests: ['Cloud Computing', 'Microservices'],
+      isActive: true,
+    });
+
+    console.log('👤 Seeded Admin, Instructor, and Students.');
+
+    // 2. Seed Real Comprehensive Courses with Modules, Lessons, Quizzes, Assignments, Announcements, Q&A, and Reviews
     const course1 = await Course.create({
       title: 'Full-Stack MERN Architecture: Zero to Production',
       slug: 'full-stack-mern-architecture-zero-to-production',
       description:
-        'A comprehensive masterclass covering modern React, Node.js, Express, MongoDB Atlas, JWT authentication, state management, and real-world deployment pipelines.',
+        'A comprehensive masterclass covering modern React 18, Node.js, Express, MongoDB Atlas, JWT authentication, state management, and real-world deployment pipelines.',
       thumbnail:
         'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop&q=80',
       category: 'Full-Stack',
@@ -88,9 +122,10 @@ const seedDatabase = async () => {
       price: 0,
       isFree: true,
       published: true,
+      status: 'published',
       rating: 4.9,
-      ratingCount: 84,
-      enrolledStudentsCount: 1,
+      ratingCount: 85,
+      enrolledStudentsCount: 2,
       learningOutcomes: [
         'Build scalable RESTful APIs with Node.js and Express',
         'Model complex schemas and relations in MongoDB with Mongoose',
@@ -155,6 +190,96 @@ const seedDatabase = async () => {
           ],
         },
       ],
+      quizzes: [
+        {
+          title: 'MERN Stack Milestone 1 Knowledge Check',
+          description: 'Test your understanding of Express middleware, MongoDB indexing, and JWT authentication flows.',
+          timeLimitMinutes: 10,
+          questions: [
+            {
+              question: 'Which middleware is essential in Express to parse incoming JSON payloads in request bodies?',
+              options: ['express.urlencoded()', 'express.json()', 'express.static()', 'bodyCleaner()'],
+              correctAnswerIndex: 1,
+              explanation: 'express.json() is the built-in middleware function in Express that parses incoming requests with JSON payloads.',
+            },
+            {
+              question: 'Where should JWT tokens typically be stored in secure browser Single Page Applications?',
+              options: ['In plain global variables or HTTP-only cookies / secure memory', 'In URL query parameters', 'In HTML meta tags', 'In localStorage unencrypted with admin rights'],
+              correctAnswerIndex: 0,
+              explanation: 'Secure memory or HTTP-only cookies protect against XSS token exfiltration.',
+            },
+            {
+              question: 'What is the purpose of Mongoose schema pre-save hooks in password hashing?',
+              options: ['To hash the plain-text password with bcrypt before writing to the database', 'To send an email to the administrator', 'To restart the server', 'To delete duplicate records'],
+              correctAnswerIndex: 0,
+              explanation: 'Pre-save middleware intercepts user documents before writing to MongoDB, ensuring passwords are never stored in plaintext.',
+            },
+            {
+              question: 'What does the HTTP 401 status code indicate in RESTful APIs?',
+              options: ['Resource Not Found', 'Unauthorized / Missing Authentication Token', 'Server Internal Error', 'Successful Request'],
+              correctAnswerIndex: 1,
+              explanation: 'HTTP 401 Unauthorized indicates that the client request lacks valid authentication credentials.',
+            },
+          ],
+        },
+      ],
+      assignments: [
+        {
+          title: 'Milestone 1: Resilient Authentication Middleware',
+          description: 'Implement an Express auth middleware that extracts the Bearer token, verifies its signature with jsonwebtoken, and attaches req.user to subsequent handler routes.',
+          taskPrompt: 'Write a Node.js Express middleware function `verifyToken(req, res, next)` that parses the Authorization header, validates the JWT, handles expired tokens gracefully, and attaches the decoded user object.',
+          rubric: 'Token extraction & bearer check (30%), JWT verification & error handling (40%), req.user payload population (30%)',
+          points: 100,
+        },
+        {
+          title: 'Milestone 2: Custom React Hook for API Data Fetching with Caching',
+          description: 'Build a reusable `useFetch(url)` hook in React with loading, data, and error state tracking, including cache invalidation.',
+          taskPrompt: 'Create a production-grade custom React hook `useFetch(url, options)` that handles async Axios requests, abort controllers for component unmounting, and returns `{ data, loading, error, refetch }`.',
+          rubric: 'Cleanup & AbortController (35%), Error boundary handling (35%), Clean TypeScript/JS code & documentation (30%)',
+          points: 100,
+        },
+      ],
+      announcements: [
+        {
+          title: 'Welcome to Full-Stack MERN Architecture!',
+          content: 'Hello scholars! Our live Q&A office hours are held every Wednesday at 6 PM EST. Check the Course Q&A tab whenever you have architectural questions.',
+          authorName: 'Dr. Alan Turing',
+          createdAt: new Date(Date.now() - 86400000 * 5),
+        },
+        {
+          title: 'Milestone 1 Assignment Rubric Released',
+          content: 'The Milestone 1 assignment is now live. You can submit your code snippet directly in the Classroom tab for automated AI rubric evaluation and instructor remarks.',
+          authorName: 'Dr. Alan Turing',
+          createdAt: new Date(Date.now() - 86400000 * 2),
+        },
+      ],
+      discussions: [
+        {
+          user: student._id,
+          userName: 'Sarah Connor',
+          userRole: 'student',
+          question: 'Should we store JWT refresh tokens in Redis or directly in MongoDB with a TTL index?',
+          createdAt: new Date(Date.now() - 86400000 * 3),
+          answers: [
+            {
+              user: instructor._id,
+              userName: 'Dr. Alan Turing',
+              userRole: 'instructor',
+              answer: 'Great question Sarah! In high-throughput production systems, Redis is preferred due to in-memory sub-millisecond lookups and native EXPIRE commands. For smaller systems, a MongoDB collection with a TTL index works reliably without extra infrastructure overhead.',
+              createdAt: new Date(Date.now() - 86400000 * 2),
+            },
+          ],
+        },
+      ],
+      reviews: [
+        {
+          student: student._id,
+          studentName: 'Sarah Connor',
+          rating: 5,
+          comment: 'Outstanding curriculum! The step-by-step breakdown of Express middleware and JWT security answered every real-world question I had.',
+          createdAt: new Date(Date.now() - 86400000 * 4),
+        },
+      ],
     });
 
     const course2 = await Course.create({
@@ -172,9 +297,10 @@ const seedDatabase = async () => {
       price: 0,
       isFree: true,
       published: true,
+      status: 'published',
       rating: 4.95,
       ratingCount: 120,
-      enrolledStudentsCount: 0,
+      enrolledStudentsCount: 1,
       learningOutcomes: [
         'Analyze Big-O time and space complexities rigorously',
         'Solve tree traversal and graph search (BFS/DFS) challenges',
@@ -199,6 +325,30 @@ const seedDatabase = async () => {
           ],
         },
       ],
+      quizzes: [
+        {
+          title: 'Algorithm Complexity & Two-Pointer Checkpoint',
+          description: 'Evaluate time/space complexity analysis and pointer manipulation logic.',
+          timeLimitMinutes: 12,
+          questions: [
+            {
+              question: 'What is the time complexity of the Two-Pointer approach for finding a pair that sums to a target in a sorted array?',
+              options: ['O(N^2)', 'O(N)', 'O(log N)', 'O(1)'],
+              correctAnswerIndex: 1,
+              explanation: 'Because each pointer moves at most N steps in a single pass, the time complexity is linear O(N).',
+            },
+          ],
+        },
+      ],
+      assignments: [
+        {
+          title: 'Algorithm Lab: Trapping Rain Water Solution',
+          description: 'Implement the optimal two-pointer solution for the classic Trapping Rain Water problem with O(N) time and O(1) auxiliary space.',
+          taskPrompt: 'Write a JavaScript function `trap(height)` that calculates how much rain water can be trapped after raining given an array of non-negative integers.',
+          rubric: 'O(N) time and O(1) space efficiency (50%), Correctness on edge cases (30%), Code readability (20%)',
+          points: 100,
+        },
+      ],
     });
 
     const course3 = await Course.create({
@@ -216,6 +366,7 @@ const seedDatabase = async () => {
       price: 0,
       isFree: true,
       published: true,
+      status: 'published',
       rating: 4.88,
       ratingCount: 47,
       enrolledStudentsCount: 0,
@@ -259,9 +410,10 @@ const seedDatabase = async () => {
       price: 0,
       isFree: true,
       published: true,
+      status: 'published',
       rating: 4.79,
       ratingCount: 31,
-      enrolledStudentsCount: 0,
+      enrolledStudentsCount: 1,
       learningOutcomes: [
         'Write production Dockerfiles and docker-compose configurations',
         'Manage secrets and cloud environment variables securely',
@@ -287,19 +439,201 @@ const seedDatabase = async () => {
       ],
     });
 
-    console.log('📚 Seeded 4 Comprehensive Courses with modules and lessons.');
+    console.log('📚 Seeded 4 Comprehensive Courses with rich curriculums.');
 
-    // 3. Seed Enrollment for Student
-    await Enrollment.create({
+    // 3. Seed Enrollments
+    const enrollment1 = await Enrollment.create({
       student: student._id,
       course: course1._id,
-      completionPercentage: 35,
-      completedLessons: ['Express REST Server Setup & Middleware Chain'],
-      lastAccessedLesson: 'MongoDB Atlas Integration & Mongoose Schemas',
+      completionPercentage: 100,
+      completedLessons: [
+        'Express REST Server Setup & Middleware Chain',
+        'MongoDB Atlas Integration & Mongoose Schemas',
+        'JWT Authentication & Password Hashing',
+        'React 18 State Architecture & Context API',
+        'Glassmorphism Design Systems with Tailwind CSS',
+      ],
+      lastAccessedLesson: 'Glassmorphism Design Systems with Tailwind CSS',
+      status: 'completed',
+      certificateIssued: true,
+      certificateId: 'CERT-FUL-891042',
+      completedAt: new Date(Date.now() - 86400000 * 2),
+    });
+
+    await Enrollment.create({
+      student: student._id,
+      course: course2._id,
+      completionPercentage: 50,
+      completedLessons: ['Two Pointers & Binary Search in Practice'],
+      lastAccessedLesson: 'Two Pointers & Binary Search in Practice',
       status: 'active',
     });
 
-    // 4. Seed Learning Shorts (Reels / TikTok-style microlearning)
+    await Enrollment.create({
+      student: student2._id,
+      course: course1._id,
+      completionPercentage: 40,
+      completedLessons: ['Express REST Server Setup & Middleware Chain', 'MongoDB Atlas Integration & Mongoose Schemas'],
+      lastAccessedLesson: 'JWT Authentication & Password Hashing',
+      status: 'active',
+    });
+
+    await Enrollment.create({
+      student: student2._id,
+      course: course4._id,
+      completionPercentage: 100,
+      completedLessons: ['Containerizing Node.js and React Applications'],
+      lastAccessedLesson: 'Containerizing Node.js and React Applications',
+      status: 'completed',
+      certificateIssued: true,
+      certificateId: 'CERT-CLO-994120',
+      completedAt: new Date(Date.now() - 86400000 * 1),
+    });
+
+    console.log('📝 Seeded real student enrollments and course completions.');
+
+    // 4. Seed Verified Certificates
+    await Certificate.create([
+      {
+        certificateId: 'CERT-FUL-891042',
+        student: student._id,
+        studentName: student.name,
+        studentEmail: student.email,
+        course: course1._id,
+        courseTitle: course1.title,
+        instructorName: instructor.name,
+        issueDate: new Date(Date.now() - 86400000 * 2),
+        grade: 'A+ with Highest Distinction',
+        skillsCovered: course1.learningOutcomes,
+        verified: true,
+      },
+      {
+        certificateId: 'CERT-CLO-994120',
+        student: student2._id,
+        studentName: student2.name,
+        studentEmail: student2.email,
+        course: course4._id,
+        courseTitle: course4.title,
+        instructorName: instructor.name,
+        issueDate: new Date(Date.now() - 86400000 * 1),
+        grade: 'A First Class',
+        skillsCovered: course4.learningOutcomes,
+        verified: true,
+      },
+    ]);
+
+    console.log('🎓 Seeded authentic verified Certificates of Completion.');
+
+    // 5. Seed Real Assignment Submissions
+    const sub1 = await Submission.create({
+      student: student._id,
+      studentName: student.name,
+      course: course1._id,
+      courseTitle: course1.title,
+      assignmentId: course1.assignments[0]._id.toString(),
+      assignmentTitle: course1.assignments[0].title,
+      codeOrText: `import jwt from 'jsonwebtoken';
+
+export const verifyToken = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'Authorization token missing or malformed' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+    }
+    return res.status(403).json({ success: false, message: 'Invalid or forged authentication token' });
+  }
+};`,
+      submissionUrl: 'https://github.com/sarahconnor/mern-auth-middleware',
+      notes: 'Included explicit handling for TokenExpiredError and standard bearer token isolation.',
+      status: 'graded',
+      score: 96,
+      letterGrade: 'A+',
+      instructorFeedback: 'Flawless middleware implementation Sarah! Clean separation of 401 unauthorized vs 403 forbidden and clear error responses.',
+      aiEvaluation: {
+        score: 96,
+        letterGrade: 'A+',
+        summary: 'Exemplary Bearer header parsing with robust TokenExpiredError detection and clean error responses.',
+        rubricBreakdown: [
+          { criterion: 'Token Extraction', score: 30, maxScore: 30, comment: 'Strict Bearer prefix validation' },
+          { criterion: 'JWT Verification', score: 38, maxScore: 40, comment: 'Differentiates expired vs forged tokens' },
+          { criterion: 'Payload Population', score: 28, maxScore: 30, comment: 'Attaches decoded user smoothly to req.user' },
+        ],
+        strengths: ['Handles TokenExpiredError specifically', 'Clean guard clauses'],
+        improvements: ['Consider validating that decoded user contains expected schema fields'],
+        suggestedRefactor: 'export const verifyToken = async (req, res, next) => { ... }',
+        timeComplexity: 'O(1)',
+        spaceComplexity: 'O(1)',
+      },
+      submittedAt: new Date(Date.now() - 86400000 * 2),
+      gradedAt: new Date(Date.now() - 86400000 * 1),
+      gradedBy: instructor._id,
+    });
+
+    const sub2 = await Submission.create({
+      student: student2._id,
+      studentName: student2.name,
+      course: course1._id,
+      courseTitle: course1.title,
+      assignmentId: course1.assignments[0]._id.toString(),
+      assignmentTitle: course1.assignments[0].title,
+      codeOrText: `const jwt = require('jsonwebtoken');
+
+function authMiddleware(req, res, next) {
+  const token = req.headers['authorization'];
+  if (!token) return res.status(401).send('Access Denied');
+  try {
+    const verified = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
+    req.user = verified;
+    next();
+  } catch (err) {
+    res.status(400).send('Invalid Token');
+  }
+}
+module.exports = authMiddleware;`,
+      submissionUrl: 'https://github.com/alexrivera/jwt-checker',
+      notes: 'Initial attempt at auth middleware for review.',
+      status: 'pending',
+      score: null,
+      letterGrade: '',
+      submittedAt: new Date(Date.now() - 3600000 * 4),
+    });
+
+    console.log('📤 Seeded real assignment submissions.');
+
+    // 6. Seed Quiz Attempts
+    await QuizAttempt.create([
+      {
+        student: student._id,
+        studentName: student.name,
+        course: course1._id,
+        quizId: course1.quizzes[0]._id.toString(),
+        quizTitle: course1.quizzes[0].title,
+        score: 100,
+        totalQuestions: 4,
+        correctAnswersCount: 4,
+        passed: true,
+        answers: [
+          { questionIndex: 0, questionText: 'Which middleware is essential...', selectedOptionIndex: 1, correctOptionIndex: 1, isCorrect: true },
+          { questionIndex: 1, questionText: 'Where should JWT tokens typically...', selectedOptionIndex: 0, correctOptionIndex: 0, isCorrect: true },
+          { questionIndex: 2, questionText: 'What is the purpose of Mongoose...', selectedOptionIndex: 0, correctOptionIndex: 0, isCorrect: true },
+          { questionIndex: 3, questionText: 'What does the HTTP 401 status...', selectedOptionIndex: 1, correctOptionIndex: 1, isCorrect: true },
+        ],
+        completedAt: new Date(Date.now() - 86400000 * 3),
+      },
+    ]);
+
+    console.log('📊 Seeded real quiz attempt records.');
+
+    // 7. Seed Learning Shorts
     await LearningShort.create([
       {
         title: 'JavaScript Closures Explained in 30 Seconds',
@@ -373,9 +707,7 @@ const seedDatabase = async () => {
       },
     ]);
 
-    console.log('📱 Seeded 5 Interactive Learning Shorts.');
-
-    // 5. Seed Study Rooms
+    // 8. Seed Study Rooms
     await StudyRoom.create([
       {
         name: 'React 18 & Frontend Architecture Hub',
@@ -418,12 +750,9 @@ const seedDatabase = async () => {
       },
     ]);
 
-    console.log('👥 Seeded 3 Collaborative Study Rooms.');
-
-    // 6. Seed Seminars / Webinars
+    // 9. Seed Seminars
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 4);
-
     const twoWeeks = new Date();
     twoWeeks.setDate(twoWeeks.getDate() + 11);
 
@@ -466,7 +795,7 @@ const seedDatabase = async () => {
         meetingLink: 'https://meet.google.com/lms-faang-prep-live',
         thumbnail: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=60',
         category: 'Career & Placement',
-        registrations: [],
+        registrations: [student._id, student2._id],
         status: 'upcoming',
         keyTakeaways: [
           'Structured problem-solving template for 45-minute coding rounds',
@@ -476,9 +805,7 @@ const seedDatabase = async () => {
       },
     ]);
 
-    console.log('🎤 Seeded 2 Upcoming Industry Seminars.');
-
-    // 7. Seed Career Resources
+    // 10. Seed Career Resources
     await CareerResource.create([
       {
         title: 'Full-Stack Software Engineer Resume Blueprint (ATS-Optimized)',
@@ -542,56 +869,72 @@ const seedDatabase = async () => {
       },
     ]);
 
-    console.log('💼 Seeded 4 Comprehensive Career Resources & Roadmaps.');
+    // 11. Seed Feedback
+    await Feedback.create([
+      {
+        student: student._id,
+        studentName: student.name,
+        weekNumber: 1,
+        rating: 5,
+        learned: 'Successfully mastered Express middleware pipelines, JWT bearer authentication, and Mongoose schema validation.',
+        difficulties: 'Understanding asynchronous error propagation in Express without crashing the process.',
+        suggestions: 'Would love more interactive quizzes on security headers and CSRF tokens.',
+        confidenceLevel: 'High',
+      },
+      {
+        student: student2._id,
+        studentName: student2.name,
+        weekNumber: 1,
+        rating: 4,
+        learned: 'Learned Docker multi-stage builds and container networking for Express backends.',
+        difficulties: 'Configuring volume mounts for persistent data across container restarts.',
+        suggestions: 'More real-world docker-compose orchestration examples.',
+        confidenceLevel: 'Medium',
+      },
+    ]);
 
-    // 8. Seed Initial Feedback
-    await Feedback.create({
-      student: student._id,
-      studentName: student.name,
-      weekNumber: 1,
-      rating: 5,
-      learned: 'Successfully mastered Express middleware pipelines, JWT bearer authentication, and Mongoose schema validation.',
-      difficulties: 'Understanding asynchronous error propagation in Express without crashing the process.',
-      suggestions: 'Would love more interactive quizzes on security headers and CSRF tokens.',
-      confidenceLevel: 'High',
-    });
-
-    // 9. Seed Initial Notifications
+    // 12. Seed Notifications
     await Notification.create([
       {
         user: student._id,
-        title: 'Welcome to LearnSphere LMS!',
-        message: 'Your student account is active. Explore the course catalog, join a study room, or test your skills in the reels learning feed.',
-        type: 'system',
+        title: 'Course Completed & Certificate Awarded! 🎓',
+        message: 'Congratulations! You completed "Full-Stack MERN Architecture: Zero to Production" with distinction. Your verified certificate CERT-FUL-891042 is available.',
+        type: 'achievement',
+        link: '/student/certificates',
+        read: false,
+      },
+      {
+        user: student._id,
+        title: 'Assignment Graded by Instructor 📝',
+        message: 'Dr. Alan Turing graded your Milestone 1 submission with a score of 96/100 (A+).',
+        type: 'course',
         link: '/student/courses',
         read: false,
       },
       {
-        user: student._id,
-        title: 'Upcoming Seminar Registration Confirmed',
-        message: 'You are registered for "Architecting Scalable Microservices with Node.js & Docker" scheduled for this Thursday.',
-        type: 'seminar',
-        link: '/student/seminars',
+        user: instructor._id,
+        title: 'New Student Submission Pending Grade 📥',
+        message: 'Alex Rivera submitted Milestone 1 in "Full-Stack MERN Architecture". Click to evaluate with AI.',
+        type: 'course',
+        link: '/instructor/grading',
         read: false,
       },
       {
         user: admin._id,
-        title: 'System Health Check Clean',
-        message: 'All database collections synced, JWT authentication online, and 4 courses live in catalog.',
+        title: 'Platform Telemetry Online 🛡️',
+        message: 'Database clusters healthy, active student enrollments updated, all services operational.',
         type: 'system',
         link: '/admin/dashboard',
         read: false,
       },
     ]);
 
-    console.log('🔔 Seeded Notifications and Initial Feedback.');
-
     console.log('\n======================================================');
-    console.log('🎉 FULL DATABASE SEEDING COMPLETED SUCCESSFULLY!');
+    console.log('🎉 REAL PRODUCTION-GRADE LMS DATABASE SEEDED!');
     console.log('------------------------------------------------------');
-    console.log('👤 Admin:      admin@lms.com      / Password@123');
-    console.log('👤 Student:    student@lms.com    / Password@123');
-    console.log('👤 Instructor: instructor@lms.com / Password@123');
+    console.log('👑 Admin:      admin@lms.com      / Password@123');
+    console.log('👨‍🏫 Instructor: instructor@lms.com / Password@123');
+    console.log('👩‍🎓 Student:    student@lms.com    / Password@123');
     console.log('======================================================\n');
 
     await mongoose.disconnect();

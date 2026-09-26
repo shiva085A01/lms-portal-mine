@@ -1,4 +1,12 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
+
+// Ensure Google & Cloudflare DNS resolvers are used for MongoDB SRV TXT lookups
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore if not permitted
+}
 
 export const connectDB = async () => {
   const uri = process.env.MONGODB_URI;

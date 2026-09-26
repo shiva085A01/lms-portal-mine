@@ -46,13 +46,173 @@ const moduleSchema = new mongoose.Schema({
   lessons: [lessonSchema],
 });
 
+const quizQuestionSchema = new mongoose.Schema({
+  question: {
+    type: String,
+    required: true,
+  },
+  codeSnippet: {
+    type: String,
+    default: '',
+  },
+  options: {
+    type: [String],
+    required: true,
+  },
+  correctAnswerIndex: {
+    type: Number,
+    required: true,
+  },
+  explanation: {
+    type: String,
+    default: '',
+  },
+});
+
+const quizSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    default: '',
+  },
+  timeLimitMinutes: {
+    type: Number,
+    default: 15,
+  },
+  questions: [quizQuestionSchema],
+});
+
+const assignmentSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    default: '',
+  },
+  taskPrompt: {
+    type: String,
+    required: true,
+  },
+  rubric: {
+    type: String,
+    default: 'Functional correctness (40%), Clean code (30%), Complexity (30%)',
+  },
+  dueDate: {
+    type: Date,
+    default: null,
+  },
+  points: {
+    type: Number,
+    default: 100,
+  },
+});
+
+const announcementSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  authorName: {
+    type: String,
+    default: 'Course Instructor',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const discussionAnswerSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  userName: {
+    type: String,
+    required: true,
+  },
+  userRole: {
+    type: String,
+    default: 'student',
+  },
+  answer: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const discussionSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  userName: {
+    type: String,
+    required: true,
+  },
+  userRole: {
+    type: String,
+    default: 'student',
+  },
+  question: {
+    type: String,
+    required: true,
+  },
+  answers: [discussionAnswerSchema],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const reviewSchema = new mongoose.Schema({
+  student: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  studentName: {
+    type: String,
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5,
+  },
+  comment: {
+    type: String,
+    default: '',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const courseSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: [true, 'Please provide course title'],
       trim: true,
-      maxlength: [120, 'Title cannot exceed 120 characters'],
+      maxlength: [150, 'Title cannot exceed 150 characters'],
     },
     slug: {
       type: String,
@@ -69,7 +229,6 @@ const courseSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ['Full-Stack', 'Frontend', 'Backend', 'AI & Machine Learning', 'Cloud & DevOps', 'Data Structures & Algorithms', 'Mobile Development'],
       default: 'Full-Stack',
     },
     instructor: {
@@ -98,19 +257,24 @@ const courseSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    status: {
+      type: String,
+      enum: ['draft', 'pending', 'published', 'rejected'],
+      default: 'published',
+    },
     published: {
       type: Boolean,
       default: true,
     },
     rating: {
       type: Number,
-      default: 4.8,
+      default: 5.0,
       min: 1,
       max: 5,
     },
     ratingCount: {
       type: Number,
-      default: 12,
+      default: 1,
     },
     learningOutcomes: {
       type: [String],
@@ -121,6 +285,11 @@ const courseSchema = new mongoose.Schema(
       default: [],
     },
     modules: [moduleSchema],
+    quizzes: [quizSchema],
+    assignments: [assignmentSchema],
+    announcements: [announcementSchema],
+    discussions: [discussionSchema],
+    reviews: [reviewSchema],
     enrolledStudentsCount: {
       type: Number,
       default: 0,

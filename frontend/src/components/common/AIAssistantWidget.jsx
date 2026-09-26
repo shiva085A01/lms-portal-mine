@@ -1,21 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
-import { GlassCard } from '../ui/GlassCard';
 import {
   Sparkles,
   X,
   Send,
-  Brain,
+  Compass,
   Code2,
-  HelpCircle,
+  Bot,
+  Zap,
   CheckCircle2,
   AlertCircle,
-  Bot,
-  User,
-  Zap,
-  Minimize2,
-  Maximize2,
+  Copy,
+  Terminal,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -29,7 +26,7 @@ export const AIAssistantWidget = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hello! I am **LearnSphere AI Tutor**. How can I help you with your coding journey today?',
+      content: 'Hello! I am **LearnSphere AI Tutor**. Ask questions, analyze code algorithms, or request an interactive study drill.',
     },
   ]);
   const [inputQuery, setInputQuery] = useState('');
@@ -56,7 +53,7 @@ export const AIAssistantWidget = () => {
     }
   }, [messages, activeTab, isOpen]);
 
-  if (!user) return null; // Only show for logged in students/instructors
+  if (!user) return null; // Only show for logged in users
 
   // Handle Send Chat
   const handleSendChat = async (e) => {
@@ -88,7 +85,7 @@ export const AIAssistantWidget = () => {
         ...prev,
         {
           role: 'assistant',
-          content: '⚠️ ' + (err.message || 'AI service error. Please ensure GEMINI_API_KEY is configured in backend/.env.'),
+          content: '⚠️ ' + (err.message || 'AI service error. Please verify GEMINI_API_KEY in backend/.env.'),
         },
       ]);
     } finally {
@@ -142,7 +139,7 @@ export const AIAssistantWidget = () => {
 
       if (res.success && res.data) {
         setQuizData(res.data);
-        toast.success('Generated new AI Quiz!');
+        toast.success('Generated new AI Quiz drill!');
       } else {
         throw new Error(res.message || 'Failed to generate quiz.');
       }
@@ -155,80 +152,80 @@ export const AIAssistantWidget = () => {
 
   return (
     <>
-      {/* Floating Sparkle Trigger Button */}
+      {/* Floating LMS Trigger Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-brand-600 via-indigo-600 to-pink-500 text-white font-bold text-sm shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group border border-white/20"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-terracotta-600 via-terracotta-500 to-amber-600 text-white font-bold text-xs shadow-lg shadow-terracotta-500/30 hover:scale-105 active:scale-95 transition-all duration-200 group border border-terracotta-400/40 cursor-pointer"
         >
-          <Sparkles className="w-5 h-5 text-amber-300 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>LearnSphere AI</span>
+          <Sparkles className="w-4 h-4 text-amber-200 animate-pulse" />
+          <span className="tracking-wide">AI Tutor & Evaluator</span>
         </button>
       )}
 
       {/* AI Assistant Modal Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[95vw] sm:w-[500px] h-[650px] max-h-[85vh] flex flex-col rounded-2xl bg-slate-950/95 border border-brand-500/30 shadow-2xl backdrop-blur-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-6 right-6 z-50 w-[95vw] sm:w-[500px] h-[650px] max-h-[85vh] flex flex-col rounded-3xl bg-white dark:bg-ink-900 border border-stone-200 dark:border-terracotta-500/30 shadow-2xl backdrop-blur-2xl overflow-hidden animate-slide-up font-sans transition-colors duration-300">
           
           {/* Header Bar */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-slate-900/80">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-200 dark:border-ink-800 bg-stone-50 dark:bg-ink-850">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-pink-500 p-0.5 flex items-center justify-center">
-                <Brain className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-terracotta-600 to-amber-500 p-0.5 flex items-center justify-center shadow-sm">
+                <Compass className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-sm text-white flex items-center gap-1.5">
-                  LearnSphere AI <span className="text-[10px] px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">Gemini 1.5</span>
+                <h3 className="font-serif font-bold text-sm text-stone-900 dark:text-parchment-50 flex items-center gap-1.5">
+                  LearnSphere AI <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-terracotta-500/15 text-terracotta-700 dark:text-terracotta-300 border border-terracotta-500/30 font-mono">Gemini LMS</span>
                 </h3>
-                <p className="text-[11px] text-slate-400">24/7 Intelligent Learning Companion</p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">24/7 Intelligent Learning Companion</p>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-ink-800 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Mode Selector Tabs */}
-          <div className="flex border-b border-white/5 bg-slate-900/40 text-xs font-semibold">
+          <div className="flex border-b border-stone-200 dark:border-ink-800 bg-stone-100/80 dark:bg-ink-950 text-xs font-semibold">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition-colors ${
+              className={`flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                 activeTab === 'chat'
-                  ? 'text-brand-400 border-b-2 border-brand-400 bg-brand-500/10'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-terracotta-600 dark:text-terracotta-400 border-b-2 border-terracotta-500 bg-terracotta-500/10'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               <Bot className="w-4 h-4" /> AI Tutor
             </button>
             <button
               onClick={() => setActiveTab('evaluate')}
-              className={`flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition-colors ${
+              className={`flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                 activeTab === 'evaluate'
-                  ? 'text-brand-400 border-b-2 border-brand-400 bg-brand-500/10'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-terracotta-600 dark:text-terracotta-400 border-b-2 border-terracotta-500 bg-terracotta-500/10'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               <Code2 className="w-4 h-4" /> Code Evaluator
             </button>
             <button
               onClick={() => setActiveTab('quiz')}
-              className={`flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition-colors ${
+              className={`flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                 activeTab === 'quiz'
-                  ? 'text-brand-400 border-b-2 border-brand-400 bg-brand-500/10'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-terracotta-600 dark:text-terracotta-400 border-b-2 border-terracotta-500 bg-terracotta-500/10'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
-              <Zap className="w-4 h-4 text-amber-400" /> Quiz Generator
+              <Zap className="w-4 h-4 text-amber-500" /> Quiz Generator
             </button>
           </div>
 
           {/* ================= TAB 1: AI TUTOR CHAT ================= */}
           {activeTab === 'chat' && (
-            <div className="flex-1 flex flex-col justify-between overflow-hidden">
+            <div className="flex-1 flex flex-col justify-between overflow-hidden bg-white dark:bg-ink-900">
               <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
                 {messages.map((msg, idx) => (
                   <div
@@ -238,15 +235,15 @@ export const AIAssistantWidget = () => {
                     }`}
                   >
                     {msg.role === 'assistant' && (
-                      <div className="w-7 h-7 rounded-lg bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0 mt-1">
+                      <div className="w-7 h-7 rounded-xl bg-terracotta-500/15 border border-terracotta-500/30 flex items-center justify-center text-terracotta-600 dark:text-terracotta-400 shrink-0 mt-1">
                         <Bot className="w-4 h-4" />
                       </div>
                     )}
                     <div
                       className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
                         msg.role === 'user'
-                          ? 'bg-brand-600 text-white rounded-tr-none'
-                          : 'bg-slate-900/90 text-slate-200 border border-white/5 rounded-tl-none'
+                          ? 'bg-terracotta-500 text-white rounded-tr-none'
+                          : 'bg-stone-100 dark:bg-ink-850 text-stone-900 dark:text-stone-200 border border-stone-200 dark:border-ink-750 rounded-tl-none'
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -254,23 +251,23 @@ export const AIAssistantWidget = () => {
                   </div>
                 ))}
                 {chatLoading && (
-                  <div className="flex items-center gap-2 text-xs text-brand-400 animate-pulse pl-9">
-                    <Sparkles className="w-3.5 h-3.5" /> LearnSphere AI is thinking...
+                  <div className="flex items-center gap-2 text-xs text-terracotta-600 dark:text-terracotta-400 animate-pulse pl-9">
+                    <Sparkles className="w-3.5 h-3.5" /> Thinking...
                   </div>
                 )}
                 <div ref={chatBottomRef} />
               </div>
 
               {/* Chat Input Form */}
-              <form onSubmit={handleSendChat} className="p-3 border-t border-white/10 bg-slate-900/60 flex gap-2">
+              <form onSubmit={handleSendChat} className="p-3 border-t border-stone-200 dark:border-ink-800 bg-stone-50 dark:bg-ink-850 flex gap-2">
                 <input
                   type="text"
                   value={inputQuery}
                   onChange={(e) => setInputQuery(e.target.value)}
-                  placeholder="Ask a question (e.g., Explain useEffect cleanup)..."
-                  className="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                  placeholder="Ask a technical question..."
+                  className="flex-1 bg-white dark:bg-ink-950 border border-stone-300 dark:border-ink-700 rounded-xl px-3.5 py-2 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:border-terracotta-500"
                 />
-                <Button type="submit" size="sm" variant="primary" isLoading={chatLoading} disabled={!inputQuery.trim()}>
+                <Button type="submit" size="sm" variant="terracotta" isLoading={chatLoading} disabled={!inputQuery.trim()}>
                   <Send className="w-3.5 h-3.5" />
                 </Button>
               </form>
@@ -279,28 +276,28 @@ export const AIAssistantWidget = () => {
 
           {/* ================= TAB 2: CODE EVALUATOR ================= */}
           {activeTab === 'evaluate' && (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-ink-900">
               <form onSubmit={handleRunEvaluation} className="space-y-3">
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                    Assignment / Task Goal
+                  <label className="text-[11px] font-semibold text-stone-700 dark:text-stone-300 block mb-1 font-mono">
+                    Assignment Goal / Task Description
                   </label>
                   <input
                     type="text"
                     value={evalTask}
                     onChange={(e) => setEvalTask(e.target.value)}
-                    placeholder="e.g. Write a function to reverse a linked list in O(n)"
-                    className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                    placeholder="e.g. Implement an LRU Cache with O(1) get and put"
+                    className="w-full bg-stone-50 dark:bg-ink-950 border border-stone-300 dark:border-ink-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:border-terracotta-500"
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-[11px] font-semibold text-slate-300">Your Code Submission</label>
+                    <label className="text-[11px] font-semibold text-stone-700 dark:text-stone-300 font-mono">Your Code Submission</label>
                     <select
                       value={evalLanguage}
                       onChange={(e) => setEvalLanguage(e.target.value)}
-                      className="bg-slate-900 border border-slate-700 text-[10px] rounded px-1.5 py-0.5 text-slate-300"
+                      className="bg-stone-50 dark:bg-ink-950 border border-stone-300 dark:border-ink-700 text-[10px] rounded-lg px-2 py-0.5 text-stone-700 dark:text-stone-300 font-mono"
                     >
                       <option value="javascript">JavaScript</option>
                       <option value="python">Python</option>
@@ -313,46 +310,46 @@ export const AIAssistantWidget = () => {
                     rows={6}
                     value={evalCode}
                     onChange={(e) => setEvalCode(e.target.value)}
-                    placeholder="Paste your solution code here..."
-                    className="w-full font-mono bg-slate-950 border border-slate-700/80 rounded-lg p-3 text-xs text-emerald-400 placeholder-slate-600 focus:outline-none focus:border-brand-500"
+                    placeholder="Paste your source code here..."
+                    className="w-full font-mono bg-stone-900 text-amber-300 dark:bg-ink-950 border border-stone-800 dark:border-ink-700 rounded-xl p-3 text-xs placeholder-stone-600 focus:outline-none focus:border-terracotta-500"
                     required
                   />
                 </div>
 
-                <Button type="submit" size="sm" variant="primary" className="w-full" isLoading={evalLoading}>
-                  <Sparkles className="w-4 h-4 mr-1.5" /> Evaluate Submission
+                <Button type="submit" size="sm" variant="terracotta" className="w-full" isLoading={evalLoading}>
+                  <Sparkles className="w-4 h-4 mr-1.5" /> Run AI Evaluation
                 </Button>
               </form>
 
               {/* Evaluation Result Display */}
               {evalResult && (
-                <div className="p-4 rounded-xl bg-slate-900 border border-brand-500/30 space-y-3 animate-in fade-in">
-                  <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                <div className="p-4 rounded-2xl bg-stone-50 dark:bg-ink-850 border border-terracotta-500/30 space-y-3 animate-slide-up">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-ink-750">
                     <div>
-                      <span className="text-2xl font-black text-brand-400">{evalResult.score}/100</span>
-                      <span className="ml-2 text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">
+                      <span className="text-2xl font-serif font-bold text-terracotta-600 dark:text-terracotta-400">{evalResult.score}/100</span>
+                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-jade-500/15 text-jade-700 dark:text-jade-300 font-semibold border border-jade-500/30 font-mono">
                         Grade {evalResult.letterGrade}
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-400 font-mono">
+                    <span className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                       {evalResult.timeComplexity} | {evalResult.spaceComplexity}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">{evalResult.summary}</p>
+                  <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">{evalResult.summary}</p>
 
-                  <div className="space-y-1.5 pt-2 border-t border-white/5">
-                    <h5 className="text-[11px] font-bold text-emerald-400 uppercase tracking-wide">Key Strengths</h5>
-                    <ul className="text-xs text-slate-300 list-disc list-inside space-y-0.5">
+                  <div className="space-y-1.5 pt-2 border-t border-stone-200 dark:border-ink-750">
+                    <h5 className="text-[11px] font-mono font-bold text-jade-600 dark:text-jade-400 uppercase tracking-wide">Key Strengths</h5>
+                    <ul className="text-xs text-stone-600 dark:text-stone-300 list-disc list-inside space-y-0.5">
                       {evalResult.strengths?.map((s, i) => (
                         <li key={i}>{s}</li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="space-y-1.5 pt-2 border-t border-white/5">
-                    <h5 className="text-[11px] font-bold text-amber-400 uppercase tracking-wide">Actionable Improvements</h5>
-                    <ul className="text-xs text-slate-300 list-disc list-inside space-y-0.5">
+                  <div className="space-y-1.5 pt-2 border-t border-stone-200 dark:border-ink-750">
+                    <h5 className="text-[11px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">Actionable Improvements</h5>
+                    <ul className="text-xs text-stone-600 dark:text-stone-300 list-disc list-inside space-y-0.5">
                       {evalResult.improvements?.map((imp, i) => (
                         <li key={i}>{imp}</li>
                       ))}
@@ -365,29 +362,29 @@ export const AIAssistantWidget = () => {
 
           {/* ================= TAB 3: AI QUIZ GENERATOR ================= */}
           {activeTab === 'quiz' && (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-ink-900">
               <form onSubmit={handleGenerateQuiz} className="space-y-3">
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={quizTopic}
                     onChange={(e) => setQuizTopic(e.target.value)}
-                    placeholder="Enter topic (e.g. MongoDB Aggregation, Redux Toolkit)..."
-                    className="flex-1 bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                    placeholder="Topic (e.g. MongoDB Aggregation, Docker, React)..."
+                    className="flex-1 bg-stone-50 dark:bg-ink-950 border border-stone-300 dark:border-ink-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:border-terracotta-500"
                     required
                   />
                   <select
                     value={quizDifficulty}
                     onChange={(e) => setQuizDifficulty(e.target.value)}
-                    className="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 text-slate-300"
+                    className="bg-stone-50 dark:bg-ink-950 border border-stone-300 dark:border-ink-700 text-xs rounded-xl px-2 text-stone-700 dark:text-stone-300 font-mono"
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
                     <option value="advanced">Advanced</option>
                   </select>
                 </div>
-                <Button type="submit" size="sm" variant="primary" className="w-full" isLoading={quizLoading}>
-                  <Zap className="w-4 h-4 mr-1.5 text-amber-300" /> Generate 4-Question Drill
+                <Button type="submit" size="sm" variant="amber" className="w-full" isLoading={quizLoading}>
+                  <Zap className="w-4 h-4 mr-1.5" /> Generate 4-Question Drill
                 </Button>
               </form>
 
@@ -399,26 +396,26 @@ export const AIAssistantWidget = () => {
                     const isCorrect = selected === q.correctAnswerIndex;
 
                     return (
-                      <div key={qIndex} className="p-3.5 rounded-xl bg-slate-900/90 border border-white/10 space-y-2.5">
-                        <div className="text-xs font-bold text-white flex items-start gap-2">
-                          <span className="text-brand-400">Q{qIndex + 1}.</span>
+                      <div key={qIndex} className="p-3.5 rounded-2xl bg-stone-50 dark:bg-ink-850 border border-stone-200 dark:border-ink-750 space-y-2.5">
+                        <div className="text-xs font-bold text-stone-900 dark:text-white flex items-start gap-2">
+                          <span className="text-terracotta-600 dark:text-terracotta-400 font-mono">Q{qIndex + 1}.</span>
                           <span>{q.question}</span>
                         </div>
 
                         {q.codeSnippet && (
-                          <pre className="p-2 rounded bg-black/60 font-mono text-[11px] text-emerald-400 overflow-x-auto">
+                          <pre className="p-2 rounded-xl bg-stone-900 font-mono text-[11px] text-amber-300 overflow-x-auto border border-stone-800">
                             {q.codeSnippet}
                           </pre>
                         )}
 
                         <div className="space-y-1.5">
                           {q.options?.map((opt, optIndex) => {
-                            let btnStyle = 'border-slate-800 bg-slate-950/60 text-slate-300 hover:bg-slate-800/80';
+                            let btnStyle = 'border-stone-200 dark:border-ink-750 bg-white dark:bg-ink-950 text-stone-700 dark:text-stone-300 hover:border-terracotta-500/40';
                             if (isAnswered) {
                               if (optIndex === q.correctAnswerIndex) {
-                                btnStyle = 'border-emerald-500 bg-emerald-500/20 text-emerald-200';
+                                btnStyle = 'border-jade-500 bg-jade-500/20 text-jade-800 dark:text-jade-200';
                               } else if (selected === optIndex) {
-                                btnStyle = 'border-rose-500 bg-rose-500/20 text-rose-200';
+                                btnStyle = 'border-rose-500 bg-rose-500/20 text-rose-800 dark:text-rose-200';
                               }
                             }
 
@@ -433,7 +430,7 @@ export const AIAssistantWidget = () => {
                                     [qIndex]: optIndex,
                                   }))
                                 }
-                                className={`w-full text-left p-2 rounded-lg border text-xs transition-all ${btnStyle}`}
+                                className={`w-full text-left p-2.5 rounded-xl border text-xs transition-all cursor-pointer ${btnStyle}`}
                               >
                                 {opt}
                               </button>
@@ -442,7 +439,7 @@ export const AIAssistantWidget = () => {
                         </div>
 
                         {isAnswered && (
-                          <div className={`p-2 rounded text-[11px] ${isCorrect ? 'bg-emerald-950/50 text-emerald-300' : 'bg-amber-950/50 text-amber-300'}`}>
+                          <div className={`p-2.5 rounded-xl text-[11px] ${isCorrect ? 'bg-jade-500/10 text-jade-700 dark:text-jade-300 border border-jade-500/20' : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20'}`}>
                             {isCorrect ? '✓ Correct! ' : '✗ Incorrect. '}
                             {q.explanation}
                           </div>

@@ -10,7 +10,9 @@ export const GlassCard = ({
   return (
     <div
       onClick={onClick}
-      className={`glass-card p-6 ${hoverEffect ? 'hover:-translate-y-1' : ''} ${className}`}
+      className={`rounded-3xl bg-white dark:bg-ink-850 border border-stone-200 dark:border-ink-750 text-stone-900 dark:text-parchment-100 p-6 shadow-sm ${
+        hoverEffect ? 'hover:-translate-y-0.5 hover:border-terracotta-500/40 hover:shadow-md transition-all duration-200' : ''
+      } ${className}`}
       {...props}
     >
       {children}

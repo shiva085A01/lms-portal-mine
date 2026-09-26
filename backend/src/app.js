@@ -8,6 +8,9 @@ import { successResponse } from './utils/apiResponse.js';
 
 import authRoutes from './routes/authRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
+import submissionRoutes from './routes/submissionRoutes.js';
+import quizRoutes from './routes/quizRoutes.js';
+import certificateRoutes from './routes/certificateRoutes.js';
 import learningShortRoutes from './routes/learningShortRoutes.js';
 import studyRoomRoutes from './routes/studyRoomRoutes.js';
 import seminarRoutes from './routes/seminarRoutes.js';
@@ -42,12 +45,8 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server, Postman)
       if (!origin) return callback(null, true);
-
       const normalizedOrigin = origin.trim().replace(/\/+$/, '');
-
-      // Allow configured origins, subdomains/previews on Vercel, Netlify, Render, or in dev mode
       if (
         allowedOrigins.includes(normalizedOrigin) ||
         normalizedOrigin.endsWith('.vercel.app') ||
@@ -57,7 +56,7 @@ app.use(
       ) {
         return callback(null, true);
       }
-      return callback(null, true); // Fallback: allow request to proceed cleanly
+      return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -93,11 +92,14 @@ app.get('/', (req, res) => {
   });
 });
 
-// Mount All Feature API Routes (both with /api prefix and direct fallback)
+// Mount All Feature API Routes
 const routeList = [
   ['/auth', authRoutes],
   ['/users', userRoutes],
   ['/courses', courseRoutes],
+  ['/submissions', submissionRoutes],
+  ['/quizzes', quizRoutes],
+  ['/certificates', certificateRoutes],
   ['/learning-shorts', learningShortRoutes],
   ['/study-rooms', studyRoomRoutes],
   ['/seminars', seminarRoutes],
@@ -112,25 +114,6 @@ routeList.forEach(([path, router]) => {
   app.use(`/api${path}`, router);
   app.use(path, router);
 });
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
-// app.use('/api/courses', courseRoutes);
-// app.use('/api/modules', moduleRoutes);
-// app.use('/api/lessons', lessonRoutes);
-// app.use('/api/enrollments', enrollmentRoutes);
-// app.use('/api/assignments', assignmentRoutes);
-// app.use('/api/submissions', submissionRoutes);
-// app.use('/api/quizzes', quizRoutes);
-// app.use('/api/quiz-attempts', quizAttemptRoutes);
-// app.use('/api/progress', progressRoutes);
-// app.use('/api/feedback', feedbackRoutes);
-// app.use('/api/study-rooms', studyRoomRoutes);
-// app.use('/api/seminars', seminarRoutes);
-// app.use('/api/notifications', notificationRoutes);
-// app.use('/api/career', careerRoutes);
-// app.use('/api/learning-shorts', learningShortRoutes);
-// app.use('/api/ai', aiRoutes);
-// app.use('/api/analytics', analyticsRoutes);
 
 // Error Middlewares
 app.use(notFound);

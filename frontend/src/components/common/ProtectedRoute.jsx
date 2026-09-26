@@ -8,10 +8,10 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#090d16] flex items-center justify-center">
+      <div className="min-h-screen bg-stone-100 dark:bg-ink-950 flex items-center justify-center font-sans">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full border-2 border-brand-500/20 border-t-brand-500 animate-spin"></div>
-          <p className="text-slate-400 text-sm animate-pulse">Authenticating session...</p>
+          <div className="w-10 h-10 rounded-full border-2 border-terracotta-500/20 border-t-terracotta-500 animate-spin"></div>
+          <p className="text-stone-600 dark:text-stone-400 text-xs font-mono animate-pulse">Authenticating LMS session...</p>
         </div>
       </div>
     );
